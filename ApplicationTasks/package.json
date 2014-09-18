@@ -1,0 +1,15 @@
+{
+  "name": "ApplicationTasks",
+  "version": "0.0.1",
+  "description": "Solutions to the course application tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stefan Kovachev",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "nodeunit": "^0.9.0"
+  }
+}
