@@ -1,0 +1,17 @@
+{
+	"name" : "ThatNodeTask",
+	"dependencies" : {
+		"async" : "*",
+        "moment": "*",
+		"express": "*",
+		"body-parser": "*",
+        "express-domain-middleware": "*",
+        "node-uuid": "*",
+        "request": "*",
+        "mocha": "*",
+        "chai": "*",
+        "node.extend": "*"
+	},
+    "main": "app.js",
+	"private": true
+}
