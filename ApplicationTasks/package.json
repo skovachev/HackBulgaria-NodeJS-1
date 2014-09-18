@@ -9,6 +9,7 @@
   "author": "Stefan Kovachev",
   "license": "ISC",
   "dependencies": {
+    "jquery": "^2.1.1",
     "lodash": "^2.4.1",
     "nodeunit": "^0.9.0"
   }

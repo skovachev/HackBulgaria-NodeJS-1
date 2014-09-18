@@ -20,18 +20,33 @@
     <body>
         <h1>Draw triangles</h1>
         <label for="color">Color (CSS value):</label>
-        <input type="text" name='color' id='color' value='black'>
+        <input type="text" name='color' id='color' value='#77ff33'>
         <a href="javascript:clearCanvas();">Clear canvas</a>
+        <a href="javascript:saveToStorage();">Save to local storage</a>
+        <div id="saves">
+            <select name="save-select" id="">
+                
+            </select>
+            <a href="javascript:loadSave()">Load save</a>
+        </div>
         <br><br>
 
         <canvas id='canvas' width="600" height="500">
             
         </canvas>
 
+        <script src='../node_modules/jquery/dist/jquery.js'></script>
+        <script src='color.js'></script>
+        <script src='colors.js'></script>
+        <script src='region.js'></script>
+
         <script>
             var canvas = document.getElementById('canvas'),
                 context = canvas.getContext('2d'),
                 points = [],
+
+                triangles = [],
+
                 drawDot = function(point)
                 {
                     context.beginPath();
@@ -40,19 +55,127 @@
                     context.fillStyle = 'red';
                     context.fill();
                 },
-                drawTriangle = function(points)
+                drawTriangle = function(points, color, skipSave)
                 {
-                    context.fillStyle = document.getElementById('color').value;
+                    context.fillStyle = color || document.getElementById('color').value;
                     context.beginPath();
                     context.moveTo(points[0].x, points[0].y);
                     context.lineTo(points[1].x, points[1].y);
                     context.lineTo(points[2].x, points[2].y);
                     context.closePath();
                     context.fill();
+
+                    var triangle = {
+                        'points': points,
+                        'color': context.fillStyle
+                    };
+
+                    if (!skipSave)
+                    {
+                        triangles.push(triangle);
+                    }
+
+                    drawTriangleArea(triangle);
+                },
+                drawTriangleArea = function(triangle)
+                {
+                    var region = new Region(triangle.points),
+                        area = region.area() + '',
+                        center = region.centroid(),
+                        color = Color(triangle.color),
+                        complementary_color = $c.complement(color.hexString()),
+                        text_metrics = context.measureText(area);
+                    context.fillStyle = complementary_color;
+                    console.log(area, complementary_color, text_metrics, center);
+                    context.fillText(area, center.x - text_metrics.width/2, center.y);
                 },
                 clearCanvas = function()
                 {
+                    triangles = [];
+                    points = [];
                     context.clearRect(0, 0, canvas.width, canvas.height);
+                },
+                saveToStorage = function()
+                {
+                    if (!window['localStorage'])
+                    {
+                        alert('Not supported');
+                    }
+                    else
+                    {
+                        var saves = loadSavesFromStorage(),
+                            saveNumber =  parseInt(localStorage.getItem('saveCounter'), 10) || 1,
+                            saveName = 'Save #'+ saveNumber;
+
+                        saveName = prompt('Please enter name for your save', saveName);
+
+                        saves[saveName] = triangles;
+                        localStorage.setItem('saves', JSON.stringify(saves));
+                        localStorage.setItem('saveCounter', saveNumber+1);
+                    }
+
+                    initSelectFromStorage();
+                },
+                loadSavesFromStorage = function()
+                {
+                    var saves = localStorage.getItem('saves');
+                    if (saves)
+                    {
+                        saves = JSON.parse(saves);
+                    }
+                    else
+                    {
+                        saves = {};
+                    }
+                    return saves;
+                },
+                initSelectFromStorage = function()
+                {
+                    var $saves = $('#saves'),
+                        $select = $saves.find('select');
+                    if (localStorage)
+                    {
+                        var saves = loadSavesFromStorage(),
+                            hasSaves = false;
+
+                        $select.html('');
+
+                        $.each(saves, function(saveName, save){
+                            hasSaves = true;
+                            $select.append("<option value='"+saveName+"'>"+saveName+"</option>");
+                        });
+
+                        $saves[hasSaves ? 'show' : 'hide']();
+                    }
+                    else
+                    {
+                        $saves.hide();
+                    }
+                },
+
+                loadSave = function()
+                {
+                    var saves = loadSavesFromStorage(),
+                        saveName = $('#saves select').val(),
+                        save = saves[saveName];
+
+                    if (save)
+                    {
+                        clearCanvas();
+                        triangles = save;
+                        refreshCanvas();
+                    }
+                },
+                refreshCanvas = function()
+                {
+                    $.each(triangles, function(index, triangle)
+                    {
+                        $.each(triangle.points, function(index, point){
+                            drawDot(point);
+                        });
+
+                        drawTriangle(triangle.points, triangle.color, true);
+                    });
                 },
                 addPoint = function(point)
                 {
@@ -77,6 +200,8 @@
                 var mousePos = getMousePos(canvas, evt);
                 addPoint(mousePos);
             }, false);
+
+            initSelectFromStorage();
 
         </script>
     </body>
