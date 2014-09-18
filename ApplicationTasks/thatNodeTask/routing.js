@@ -69,9 +69,12 @@ function setupRoutes(app) {
              */
             if (err) {
                 //HINT: in order for the tests to pass we should handle the error and send a custom response.
-                next(err); //HINT: this is the default handling. It is routed to return a status code of 500.
+                // next(err); //HINT: this is the default handling. It is routed to return a status code of 500.
+                res.status(400).send({
+                    Error: err
+                });
             } else {
-                res.status(200).send({
+                res.status(201).send({
                     Result: createdItem
                 });
             }
@@ -92,7 +95,25 @@ function setupRoutes(app) {
             }
          with a status code of 404.
          */
-        next('routing.js: "Update by id" route handler not implemented');
+        db.updateById(id, item, function (err, createdItem) {
+            /*
+             HINT: If an error has occurred during saving the item, then the .add method calls it's callback with the error as a first parameter.
+             This is an indication that something has gone wrong and we handle it.
+             */
+            if (err) {
+                //HINT: in order for the tests to pass we should handle the error and send a custom response.
+                // next(err); //HINT: this is the default handling. It is routed to return a status code of 500.
+                res.status(404).send({
+                    Error: err
+                });
+            } else {
+                res.status(200).send({
+                    Result: createdItem
+                });
+            }
+        });
+
+        // next('routing.js: "Update by id" route handler not implemented');
     });
 
     app.delete('/db', function (req, res, next) {
@@ -102,7 +123,21 @@ function setupRoutes(app) {
                 Result: (Number: count of the items)
              }
          */
-        next('routing.js: "Delete all items" route handler not implemented');
+        db.deleteAll(function (err, deletedTotals) {
+            /*
+             HINT: If an error has occurred during saving the item, then the .add method calls it's callback with the error as a first parameter.
+             This is an indication that something has gone wrong and we handle it.
+             */
+            if (err) {
+                //HINT: in order for the tests to pass we should handle the error and send a custom response.
+                // next(err); //HINT: this is the default handling. It is routed to return a status code of 500.
+                next(err);
+            } else {
+                res.status(200).send({
+                    Result: deletedTotals
+                });
+            }
+        });
 
     });
 
@@ -119,7 +154,23 @@ function setupRoutes(app) {
              }
          with a status code of 404.
          */
-        next('routing.js: "Delete item by id" route handler not implemented');
+        db.deleteById(id, function (err, createdItem) {
+            /*
+             HINT: If an error has occurred during saving the item, then the .add method calls it's callback with the error as a first parameter.
+             This is an indication that something has gone wrong and we handle it.
+             */
+            if (err) {
+                //HINT: in order for the tests to pass we should handle the error and send a custom response.
+                // next(err); //HINT: this is the default handling. It is routed to return a status code of 500.
+                res.status(404).send({
+                    Error: err
+                });
+            } else {
+                res.status(200).send({
+                    Result: createdItem
+                });
+            }
+        });
     });
 };
 

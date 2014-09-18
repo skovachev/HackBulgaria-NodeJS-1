@@ -36,7 +36,7 @@ Db.prototype.addItem = function(item, done){
         }
         item.id = item.id || uuid.v1(); //use the id supplied by the user or generate a new one.
         if(findById(item.id, data)) {
-            return done('Invalid item id. If you supply an id for the item it must be unique.');
+            return done('Item with the same id already exists');
         }
         data.push(item);
         self.writeItems(data, function(err) {
@@ -83,8 +83,40 @@ Db.prototype.getById = function(id, done) {
  * @param done
  */
 Db.prototype.updateById = function(id, item, done){
+    var self = this;
+
+    if(typeof item !== 'object') {
+        return done('Invalid item');
+    }
+    if(typeof done !== 'function') {
+        return done('Callback not supplied');
+    }
+    /*
+        Get the data, push the new item and writeItems it back.
+     */
+    this.readItems(function(err, data) {
+        if(err){
+            return done(err);
+        }
+        var itemIndex = findIndexById(id, data);
+        if(itemIndex !== null)
+        {
+            data[itemIndex].name = item.name;
+            self.writeItems(data, function(err) {
+                if(err){
+                    return done(err);
+                }
+                done(null, data[itemIndex]);
+            });
+        }
+        else
+        {
+            return done('Item not found');
+        }
+    });
+
     //See Db.prototype.getById
-    done('Method updateById in Db.js not implemented');
+    // done('Method updateById in Db.js not implemented');
 };
 
 /**
@@ -93,7 +125,33 @@ Db.prototype.updateById = function(id, item, done){
  * @param done
  */
 Db.prototype.deleteById = function(id, done){
-    done('Method deleteById in Db.js not implemented');
+    var self = this;
+
+    if(typeof done !== 'function') {
+        return done('Callback not supplied');
+    }
+    /*
+        Get the data, push the new item and writeItems it back.
+     */
+    this.readItems(function(err, data) {
+        if(err){
+            return done(err);
+        }
+        var removed = removeById(id, data);
+        if(removed !== null)
+        {
+            self.writeItems(data, function(err) {
+                if(err){
+                    return done(err);
+                }
+                done(null, removed);
+            });
+        }
+        else
+        {
+            return done('Item not found');
+        }
+    });
 };
 
 /**
@@ -101,7 +159,27 @@ Db.prototype.deleteById = function(id, done){
  * @param done - done(err, count)
  */
 Db.prototype.deleteAll = function(done){
-    done('Method deleteAll in Db.js not implemented');
+    var self = this;
+
+    if(typeof done !== 'function') {
+        return done('Callback not supplied');
+    }
+    /*
+        Get the data, push the new item and writeItems it back.
+     */
+    this.readItems(function(err, data) {
+        if(err){
+            return done(err);
+        }
+        var totalDeleted = data.length;
+        data = [];
+        self.writeItems(data, function(err) {
+            if(err){
+                return done(err);
+            }
+            done(null, totalDeleted);
+        });
+    });
 };
 
 /**
@@ -158,6 +236,27 @@ var findById = function(id, data) {
     for(var i = 0;i < data.length;i++){
         if(data[i].id === id){
             return data[i];
+        }
+    }
+    return null;
+};
+
+var findIndexById = function(id, data) {
+    for(var i = 0;i < data.length;i++){
+        if(data[i].id === id){
+            return i;
+        }
+    }
+    return null;
+};
+
+var removeById = function(id, data)
+{
+    for(var i = 0;i < data.length;i++){
+        if(data[i].id === id){
+            var item = data[i];
+            data.splice(i, 1);
+            return item;
         }
     }
     return null;
