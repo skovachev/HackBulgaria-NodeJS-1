@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <style>
+
+            #canvas 
+            {
+                border: 1px solid black;
+                display: block;
+            }
+        </style>
+
+    </head>
+    <body>
+        <h1>Draw triangles</h1>
+        <label for="color">Color (CSS value):</label>
+        <input type="text" name='color' id='color' value='black'>
+        <a href="javascript:clearCanvas();">Clear canvas</a>
+        <br><br>
+
+        <canvas id='canvas' width="600" height="500">
+            
+        </canvas>
+
+        <script>
+            var canvas = document.getElementById('canvas'),
+                context = canvas.getContext('2d'),
+                points = [],
+                drawDot = function(point)
+                {
+                    context.beginPath();
+                    context.arc(point.x, point.y, 5, 0, 2 * Math.PI, true);
+                    context.closePath();
+                    context.fillStyle = 'red';
+                    context.fill();
+                },
+                drawTriangle = function(points)
+                {
+                    context.fillStyle = document.getElementById('color').value;
+                    context.beginPath();
+                    context.moveTo(points[0].x, points[0].y);
+                    context.lineTo(points[1].x, points[1].y);
+                    context.lineTo(points[2].x, points[2].y);
+                    context.closePath();
+                    context.fill();
+                },
+                clearCanvas = function()
+                {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                },
+                addPoint = function(point)
+                {
+                    points.push(point);
+                    drawDot(point);
+                    if (points.length === 3)
+                    {
+                        drawTriangle(points);
+                        points = [];
+                    }
+                },
+                getMousePos = function(canvas, evt) 
+                {
+                    var rect = canvas.getBoundingClientRect();
+                    return {
+                        x: evt.clientX - rect.left,
+                        y: evt.clientY - rect.top
+                    };
+                };
+
+            canvas.addEventListener('click', function(evt) {
+                var mousePos = getMousePos(canvas, evt);
+                addPoint(mousePos);
+            }, false);
+
+        </script>
+    </body>
+</html>
