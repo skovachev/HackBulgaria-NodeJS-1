@@ -9,10 +9,7 @@ module.exports = function(){
             args[key] = json[key];
         }
 
-        console.log(args);
-
         var response = requester.request(args.action, args, function(response){
-            console.log(response);
             if (response.user)
             {
                 json.user = response.user.name;

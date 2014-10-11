@@ -46,7 +46,6 @@ var backend = require('./storage'),
         },
         'DELETE_chirp': function(args){
             var storage = backend.login_user(args.key);
-            console.log(storage);
             if (is_string(storage))
             {
                 return error_handler(storage);
@@ -67,8 +66,6 @@ module.exports = {
     route_request: function(method, url, args){
         var request_key = method + '_' + url.substring(1),
             request_handler = handlers[request_key];
-
-        console.log('Request key:', request_key, 'params:', args);
 
         if (typeof request_handler === 'undefined'){
             return error_handler('Invalid request');

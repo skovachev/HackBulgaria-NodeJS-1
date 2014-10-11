@@ -44,7 +44,7 @@ var chirps = [],
             remaining_chirps = [];
 
         user_chirps.forEach(function(chirp, index){
-            console.log('search: ', chirp, index, chirp_id);
+
             if (chirp.id !== chirp_id)
             {
                 remaining_chirps.push(chirp);

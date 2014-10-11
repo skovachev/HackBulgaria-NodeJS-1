@@ -1,33 +1,24 @@
 var http = require('http'),
-    http_post = require('http-post'),
-    post = function(path, data, callback)
-    {
-
-    },
+    request = require('request'),
 
     actions = {
     "register": function(args, callback){
-        console.log(args);
         var user = {
             'user': args.user,
         };
 
-        var userString = JSON.stringify(user);
-
-        var request = require('request'); 
-        request(
-        { uri:args.api_url + 'register',
-          method:'POST',
-          body:userString,
-        },
-        function (error, response, body) {
-          if (!error && response.statusCode == 200) { callback(JSON.parse(body)) }
-        });
-
-        return;
+        request({ uri:args.api_url + 'register',
+                method:'POST',
+                body: JSON.stringify(user),
+            }, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    callback(JSON.parse(body));
+                } else {
+                    callback({'error': 'Request error'});
+                }
+            });
     },
     "get_all_chrips": function(args, callback){
-        console.log(args.api_url + "all_chirps");
         http.get(args.api_url + "all_chirps", function(res) {
             res.on("data", function(data) {
                 console.log(data.toString());
@@ -49,35 +40,30 @@ var http = require('http'),
             'user': args.user,
             'key': args.key
         };
-        
-        var userString = JSON.stringify(chirp);
 
-        var request = require('request'); 
-        request(
-        { uri:args.api_url + 'chirp',
-          method:'POST',
-          body:userString,
-        },
-        function (error, response, body) {
-          if (!error && response.statusCode == 200) { callback(JSON.parse(body)) }
-        });
+        request({ uri:args.api_url + 'chirp',
+                method:'POST',
+                body: JSON.stringify(chirp),
+            }, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    callback(JSON.parse(body));
+                } else {
+                    callback({'error': 'Request error'});
+                }
+            });
     },
     "delete_chirp": function(args, callback){
         var query = '?key=' + args.key + '&chirpId=' + args.chirpid;
-        // http.delete(args.api_url + "chirp" + query, function(res) {
-        //     res.on("data", function(data) {
-        //         console.log(data.toString());
-        //     });
-        // });
 
-        var request = require('request'); 
-        request(
-        { uri:args.api_url + 'chirp' + query,
-          method:'DELETE',
-        },
-        function (error, response, body) {
-          if (!error && response.statusCode == 200) { callback(JSON.parse(body)) }
-        });
+        request({ uri:args.api_url + 'chirp' + query,
+                method:'DELETE',
+            }, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    callback(JSON.parse(body));
+                } else {
+                    callback({'error': 'Request error'});
+                }
+            });
     }
 };
 

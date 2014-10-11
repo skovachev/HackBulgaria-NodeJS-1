@@ -11,7 +11,6 @@ module.exports = {
                     "port": 9615
                 };
             }
-            console.log(json);
             callback(json);
         });
     },

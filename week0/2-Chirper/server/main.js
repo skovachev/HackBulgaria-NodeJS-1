@@ -16,10 +16,7 @@ module.exports = function(){
         });
 
         req.on('end', function() {
-            console.log('data: ', data);
-
             var url_parts = url.parse(req.url, true);
-            console.log('URL parts:', url_parts);
 
             var args = {};
             if (req.method === 'GET' || req.method === 'DELETE')
