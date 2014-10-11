@@ -1,7 +1,7 @@
 var https = require('https'),
     fs = require('fs'),
     parser = null,
-    source_type = 'ini',
+    source_type = null,
 
     source = process.argv.length > 2 ? process.argv[2] : null,
     output_file = null;
