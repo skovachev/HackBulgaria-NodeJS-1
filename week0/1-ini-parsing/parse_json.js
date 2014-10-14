@@ -5,9 +5,8 @@ var fs = require('fs'),
     source_is_http = false,
     json = {},
 
-    parseJsonFile = function(source)
-    {
-        fs.readFile(source, function(err, data){
+    parseJsonFile = function(source) {
+        fs.readFile(source, function(err, data) {
             json = JSON.parse(data.toString());
 
             var lines = [];
@@ -27,8 +26,7 @@ var fs = require('fs'),
     };
 
 module.exports = {
-    parseFromSource: function(source, target)
-    {
+    parseFromSource: function(source, target) {
         output_file = target;
         parseJsonFile(source);
     }

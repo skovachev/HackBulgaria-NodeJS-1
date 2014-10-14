@@ -5,7 +5,7 @@ module.exports = function(config) {
     storage = require('../storage')(config.storage_file);
 
     return {
-        subscribe: function(info){
+        subscribe: function(info) {
             var subscriptions = storage.read('subscriptions', {}) || {},
                 generated_id = key_generator.generateKey();
 
@@ -23,23 +23,22 @@ module.exports = function(config) {
             };
         },
 
-        unsubscribe: function(info){
+        unsubscribe: function(info) {
             var subscriptions = storage.read('subscriptions', {}) || {},
                 subscriberId = info.subscriberId;
 
-            if (typeof subscriptions[subscriberId] !== 'undefined')
-            {
+            if (typeof subscriptions[subscriberId] !== 'undefined') {
                 delete subscriptions[subscriberId];
             }
 
             return info;
         },
 
-        listSubscribers: function(){
+        listSubscribers: function() {
             var subscriptions = storage.read('subscriptions', {}) || {},
                 subs = [];
 
-            Object.keys(subscriptions).forEach(function(key){
+            Object.keys(subscriptions).forEach(function(key) {
                 subs.push(subscriptions[key]);
             });
 

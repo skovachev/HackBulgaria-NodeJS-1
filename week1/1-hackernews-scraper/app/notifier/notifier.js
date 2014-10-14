@@ -2,12 +2,12 @@ var subscribersStorage = null,
     articlesStorage = null,
     mailer = require('nodemailer'),
 
-    contentMatchesWords = function(content, words){
+    contentMatchesWords = function(content, words) {
         var regex = '/' + words.join('|') + '/gi';
         return content.match(regex) !== null;
     },
 
-    configureMailerTransporter = function(mailer, config){
+    configureMailerTransporter = function(mailer, config) {
         var transporter = mailer.createTransport({
             service: 'Gmail',
             auth: {
@@ -19,11 +19,10 @@ var subscribersStorage = null,
         return transporter;
     },
 
-    createEmailContent = function(articles)
-    {
+    createEmailContent = function(articles) {
         var content = 'Here\'s your list of new articles on HackerNews: \n';
 
-        articles.forEach(function(article){
+        articles.forEach(function(article) {
             content += article.title + ' - ' + article.url + '\n';
         });
 
@@ -32,7 +31,7 @@ var subscribersStorage = null,
         return content;
     },
 
-    sendArticlesEmail = function(subscriber, articles, config){
+    sendArticlesEmail = function(subscriber, articles, config) {
         console.log('Send email to subscriber: ' + subscriber.email + ', articles: ' + articles.length);
 
         var transporter = configureMailerTransporter(mailer, config),
@@ -47,10 +46,10 @@ var subscribersStorage = null,
             html: emailContent.replace(/\n/g, '<br>')
         };
 
-        transporter.sendMail(mailOptions, function(error, info){
-            if(error){
+        transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
                 console.log(error);
-            }else{
+            } else {
                 console.log('Message sent: ' + info.response);
             }
         });
@@ -63,39 +62,39 @@ module.exports = function(config) {
     articlesStorage = require('../storage')(config.articles_file);
 
     return {
-        notifySubscribers: function(callback){
+        notifySubscribers: function(callback) {
             console.log('Notifying subscribers...');
-            
+
             var subscribers = subscribersStorage.read('subscriptions', {}),
                 articles = articlesStorage.read('new_articles', []);
 
             console.log('Subscriptions:', subscribers);
             console.log('New articles: ', articles);
 
-            Object.keys(subscribers).forEach(function(subscriber_id){
+            Object.keys(subscribers).forEach(function(subscriber_id) {
                 var subscriber = subscribers[subscriber_id],
                     matched_articles = [];
 
-                articles.forEach(function(article){
-                    if (contentMatchesWords(article.title, subscriber.keywords)){
+                articles.forEach(function(article) {
+                    if (contentMatchesWords(article.title, subscriber.keywords)) {
                         matched_articles.push(article);
                     }
                 });
 
-                if (matched_articles.length > 0){
+                if (matched_articles.length > 0) {
                     sendArticlesEmail(subscriber, matched_articles, config);
                 }
 
                 // mark articles as sent
                 var old_articles = articlesStorage.read('articles', []);
-                articles.forEach(function(article){
+                articles.forEach(function(article) {
                     old_articles.push(article);
                 });
                 articlesStorage.write('articles', old_articles);
                 articlesStorage.write('new_articles', []);
             });
 
-            if (typeof callback === 'function'){
+            if (typeof callback === 'function') {
                 callback();
             }
         }

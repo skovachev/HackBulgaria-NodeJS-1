@@ -4,13 +4,13 @@ var express = require('express'),
     app = express();
 
 
-app.post('/newArticles', function (req, res) {
-    notifier.notifySubscribers(function(){
+app.post('/newArticles', function(req, res) {
+    notifier.notifySubscribers(function() {
         res.send('Notifications sent!');
     });
 });
 
-var server = app.listen(config.port, function () {
+var server = app.listen(config.port, function() {
 
     var host = server.address().address;
     var port = server.address().port;
