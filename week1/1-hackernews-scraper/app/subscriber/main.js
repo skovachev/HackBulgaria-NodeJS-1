@@ -5,7 +5,6 @@ var express = require('express'),
     app = express();
 
 app.use(bodyParser.json());
-// app.use(bodyParser.json());
 
 app.post('/subscribe', function (req, res) {
     var subscriber_info = req.body;

@@ -1,4 +1,4 @@
-var storage = rnull,
+var storage = null,
     key_generator = require('generate-key');
 
 module.exports = function(config) {

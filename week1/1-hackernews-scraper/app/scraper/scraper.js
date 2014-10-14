@@ -1,5 +1,4 @@
 var articlesStorage = null,
-    loopIsWaiting = false,
     https = require('https'),
     http = require('http'),
     sleep = require('sleep'),
@@ -47,8 +46,11 @@ function notifyNewArticles(){
     // http.post(scraper_config.notifier_url);
     request({ uri: scraper_config.notifier_url,
         method:'POST',
-        data: ''
-    }, function (error, response, body) {});
+    }, function (error, response, body) {
+        if (error) {
+            console.log('Could not notify: ' + error);
+        }
+    });
 }
 
 function start(){

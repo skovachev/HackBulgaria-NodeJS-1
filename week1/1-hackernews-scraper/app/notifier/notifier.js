@@ -1,5 +1,5 @@
-var subscribersStorage = require('node-persist'),
-    articlesStorage = require('node-persist'),
+var subscribersStorage = null,
+    articlesStorage = null,
     mailer = require('nodemailer'),
 
     contentMatchesWords = function(content, words){
@@ -33,7 +33,7 @@ var subscribersStorage = require('node-persist'),
     },
 
     sendArticlesEmail = function(subscriber, articles, config){
-        console.log('Send email to subscriber: ', subscriber.email, ', articles: ', articles.length);
+        console.log('Send email to subscriber: ' + subscriber.email + ', articles: ' + articles.length);
 
         var transporter = configureMailerTransporter(mailer, config),
             emailContent = createEmailContent(articles);
@@ -44,7 +44,7 @@ var subscribersStorage = require('node-persist'),
             to: subscriber.email,
             subject: config.email.subject,
             text: emailContent,
-            html: emailContent
+            html: emailContent.replace(/\n/g, '<br>')
         };
 
         transporter.sendMail(mailOptions, function(error, info){
