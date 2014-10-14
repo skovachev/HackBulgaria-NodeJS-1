@@ -1,52 +1,47 @@
 var ArgumentParser = require('argparse').ArgumentParser,
     parser = new ArgumentParser({
         version: '0.0.1',
-        addHelp:false,
+        addHelp: false,
         description: 'Argparse example'
     });
 
 
 parser.addArgument(
-    ['-r', '--register'],
-    {
+    ['-r', '--register'], {
         action: 'storeConst',
-        dest:   'action',
+        dest: 'action',
         constant: 'register'
     }
 );
 
 parser.addArgument(
-    ['--getall'],
-    {
+    ['--getall'], {
         action: 'storeConst',
-        dest:   'action',
+        dest: 'action',
         constant: 'get_all_chrips'
     }
 );
 
 parser.addArgument(
-    ['--getself'],
-    {
+    ['--getself'], {
         action: 'storeConst',
-        dest:   'action',
+        dest: 'action',
         constant: 'my_chirps'
     }
 );
 
 parser.addArgument(
-    ['--create'],
-    {
+    ['--create'], {
         action: 'storeConst',
-        dest:   'action',
+        dest: 'action',
         constant: 'create_chirp'
     }
 );
 
 parser.addArgument(
-    ['--delete'],
-    {
+    ['--delete'], {
         action: 'storeConst',
-        dest:   'action',
+        dest: 'action',
         constant: 'delete_chirp'
     }
 );
@@ -64,7 +59,7 @@ parser.addArgument(
 );
 
 module.exports = {
-    args: function(){
+    args: function() {
         return parser.parseArgs();
     }
 };

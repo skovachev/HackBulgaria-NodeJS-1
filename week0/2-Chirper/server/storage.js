@@ -3,7 +3,13 @@ var chirps = [],
     chirp_counter = 1,
     users = [],
     user = null,
-    create_user = function(username){
+
+    /**
+     * Create a user from username
+     * @param  {string} username username
+     * @return {object}          user
+     */
+    create_user = function(username) {
         var key = username + '' + (user_counter++),
             user = {
                 'name': username,
@@ -14,15 +20,27 @@ var chirps = [],
 
         return user;
     },
-    load_user = function(key){
+
+    /**
+     * Load a user from storage
+     * @param  {string} key user key
+     * @return {object}     user, or null if it does not exist
+     */
+    load_user = function(key) {
         return typeof users[key] !== 'undefined' ? users[key] : null;
     },
 
-    create_chirp = function(text){
+    /**
+     * Create a new chirp
+     * @param  {string} text chirp content
+     * @return {object}      the chirp
+     */
+    create_chirp = function(text) {
         var chirp = {
                 'user': user.name,
                 'id': chirp_counter++,
-                'text': text
+                'text': text,
+                'date': new Date()
             },
             user_chirps = get_user_chirps();
 
@@ -31,31 +49,41 @@ var chirps = [],
         return chirp;
     },
 
-    get_user_chirps = function(key){
+    /**
+     * Load all chirps for a user
+     * @param  {string} key the user key
+     * @return {array}     user chirps
+     */
+    get_user_chirps = function(key) {
         var user_key = key || user.key;
         var user_chirps = chirps[user_key] || [];
+        user_chirps = user_chirps.sort(function(a, b) {
+            return new Date(b.date) - new Date(a.date);
+        });
         return user_chirps;
     },
 
-    delete_chirp = function(chirp_id){
+    /**
+     * Delete a chirp
+     * @param  {string} chirp_id the chirp id
+     * @return {object}          the deleted chirp
+     */
+    delete_chirp = function(chirp_id) {
         var user_chirps = get_user_chirps(),
             target_index = -1,
             deleted_chirp = null,
             remaining_chirps = [];
 
-        user_chirps.forEach(function(chirp, index){
+        user_chirps.forEach(function(chirp, index) {
 
-            if (chirp.id !== chirp_id)
-            {
+            if (chirp.id !== chirp_id) {
                 remaining_chirps.push(chirp);
-            }
-            else
-            {
+            } else {
                 deleted_chirp = chirp;
             }
         });
 
-        if (deleted_chirp === null){
+        if (deleted_chirp === null) {
             return 'Chirp does not exist';
         }
 
@@ -65,23 +93,38 @@ var chirps = [],
     };
 
 module.exports = {
-    get_all_chirps: function(){
+
+    /**
+     * Get all chirps
+     * @return {array} [all chirps]
+     */
+    get_all_chirps: function() {
         var all_chirps = [];
-        Object.keys(chirps).forEach(function(user_key){
+
+        // merge all user chirps into a single array
+        Object.keys(chirps).forEach(function(user_key) {
             all_chirps = all_chirps.concat(get_user_chirps(user_key));
         });
+
+        // sort by date
+        all_chirps = all_chirps.sort(function(a, b) {
+            return new Date(b.date) - new Date(a.date);
+        });
+
         return all_chirps;
     },
-            
-    create_user: function(username){
-        return create_user(username);
-    },
 
-    login_user: function(user_key){
+    create_user: create_user,
+
+    /**
+     * Login user to backend and return object to handle user specific functions
+     * @param  {string} user_key the user key
+     * @return {object} user specific functions of backend
+     */
+    login_user: function(user_key) {
         user = load_user(user_key);
 
-        if (user === null)
-        {
+        if (user === null) {
             return 'User does not exist';
         }
 
