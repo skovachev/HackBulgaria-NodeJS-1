@@ -1,22 +1,10 @@
 var subscribersStorage = null,
     articlesStorage = null,
-    mailer = require('nodemailer'),
+    mailer = require('../mailer'),
 
     contentMatchesWords = function(content, words) {
         var regex = '/' + words.join('|') + '/gi';
         return content.match(regex) !== null;
-    },
-
-    configureMailerTransporter = function(mailer, config) {
-        var transporter = mailer.createTransport({
-            service: 'Gmail',
-            auth: {
-                user: config.gmail.address,
-                pass: config.gmail.pass
-            }
-        });
-
-        return transporter;
     },
 
     createEmailContent = function(articles) {
@@ -34,19 +22,17 @@ var subscribersStorage = null,
     sendArticlesEmail = function(subscriber, articles, config) {
         console.log('Send email to subscriber: ' + subscriber.email + ', articles: ' + articles.length);
 
-        var transporter = configureMailerTransporter(mailer, config),
+        if (subscriber.verified) {
+            return false;
+        }
+
+        var content = {
+                text: emailContent,
+                html: emailContent.replace(/\n/g, '<br>')
+            },
             emailContent = createEmailContent(articles);
 
-        // setup e-mail data with unicode symbols
-        var mailOptions = {
-            from: config.email.from,
-            to: subscriber.email,
-            subject: config.email.subject,
-            text: emailContent,
-            html: emailContent.replace(/\n/g, '<br>')
-        };
-
-        transporter.sendMail(mailOptions, function(error, info) {
+        mailer.sendEmail(subscriber, content, config.email.subject, config, function (error, info) {
             if (error) {
                 console.log(error);
             } else {
@@ -54,8 +40,6 @@ var subscribersStorage = null,
             }
         });
     };
-
-
 
 module.exports = function(config) {
     subscribersStorage = require('../storage')(config.subscribers_file);

@@ -23,6 +23,21 @@ app.get('/listSubscribers', function(req, res) {
     res.json(subscribers);
 });
 
+app.get('/confirmSubscription', function(req, res) {
+    var subscriptionKey = req.query.subscriptionId,
+        subscriptionToken = req.query.subscriptionToken;
+
+    console.log('Confirm subscription: ' + subscriptionKey + ', ' + subscriptionToken);
+
+    if (typeof subscriptionKey === 'undefined' || typeof subscriptionToken === 'undefined') {
+        res.status(500).send('Subscription data is invalid');
+    }
+    else {
+        subscriber.confirmSubscription(subscriptionKey, subscriptionToken);
+        res.send('Yout subscription has been confirmed!');
+    }
+});
+
 var server = app.listen(config.port, function() {
 
     var host = server.address().address;

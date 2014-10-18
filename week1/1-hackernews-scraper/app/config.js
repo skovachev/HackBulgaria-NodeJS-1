@@ -1,8 +1,22 @@
 module.exports = {};
 
+var gmail_credentials = {
+        'address': require('./gmail_credentials').email,
+        'pass': require('./gmail_credentials').password
+    },
+    from_email = 'HackerNews Mailer <nodejs@hackbulgaria.com>';
+
 module.exports.subscriber = {
+    'confirm_subscription_url': 'http://localhost:3000/confirmSubscription',
     'port': 3000,
-    'storage_file': './temp/subscribers.json'
+    'storage_file': './temp/subscribers.json',
+
+    'gmail': gmail_credentials,
+
+    'email': {
+        'from': from_email,
+        'subject': 'Please confirm your subscription',
+    },
 };
 
 module.exports.notifier = {
@@ -10,13 +24,10 @@ module.exports.notifier = {
     'subscribers_file': './temp/subscribers.json',
     'articles_file': './temp/articles.json',
 
-    'gmail': {
-        'address': require('./gmail_credentials').email,
-        'pass': require('./gmail_credentials').password
-    },
+    'gmail': gmail_credentials,
 
     'email': {
-        'from': 'HackerNews Mailer <nodejs@hackbulgaria.com>',
+        'from': from_email,
         'subject': 'New articles for you in HackerNews',
     }
 };
