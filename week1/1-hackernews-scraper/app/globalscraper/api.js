@@ -1,5 +1,5 @@
 var express = require('express'),
-    config = require('../config').globalscraper,
+    config = require('./config'),
     globalscraper = require('./globalscraper')(config),
     app = express();
 
@@ -8,7 +8,7 @@ app.get('/keywords', function(req, res) {
     res.json(results);
 });
 
-var server = app.listen(config.api_port, function() {
+var server = app.listen(config.apiPort, function() {
 
     var host = server.address().address;
     var port = server.address().port;
