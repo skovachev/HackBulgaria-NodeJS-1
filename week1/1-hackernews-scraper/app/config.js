@@ -39,3 +39,12 @@ module.exports.scraper = {
     'item_url': 'https://hacker-news.firebaseio.com/v0/item/{id}.json?print=pretty',
     'notifier_url': 'http://localhost:3001/newArticles'
 };
+
+module.exports.globalscraper = {
+    'storage_file': './temp/histogram.json',
+    'max_item_file': './temp/global_max_item.json',
+    'max_item_url': 'https://hacker-news.firebaseio.com/v0/maxitem.json?pretty',
+    'initial_max_item': 1,
+    'item_url': 'https://hacker-news.firebaseio.com/v0/item/{id}.json?print=pretty',
+    'api_port': 3002
+};

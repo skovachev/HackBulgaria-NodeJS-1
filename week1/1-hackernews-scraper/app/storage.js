@@ -50,6 +50,10 @@ module.exports = function(file) {
 
         findIn: function(keys, callback, def) {
             return findIn(file, keys, callback, def);
+        },
+
+        readAll: function(def) {
+            return read(file);
         }
     };
 };
