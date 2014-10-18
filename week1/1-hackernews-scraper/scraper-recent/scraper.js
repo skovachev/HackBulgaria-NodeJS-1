@@ -1,6 +1,5 @@
 var articlesStorage = null,
     https = require('https'),
-    http = require('http'),
     sleep = require('sleep'),
     scraper_config = null,
     request = require('request'),
@@ -197,7 +196,7 @@ function nextCallback() {
 module.exports = function(config) {
     scraper_config = config;
 
-    articlesStorage = require('../storage')(scraper_config.articles_file);
+    articlesStorage = require('../utils').storage(scraper_config.articles_file);
 
     return {
         start: start

@@ -1,6 +1,6 @@
 var subscribersStorage = null,
     articlesStorage = null,
-    mailer = require('../mailer'),
+    mailer = require('../utils').mailer,
 
     contentMatchesWords = function(content, words) {
         var regex = '/' + words.join('|') + '/gi';
@@ -34,7 +34,7 @@ var subscribersStorage = null,
             };
             
 
-        mailer.sendEmail(subscriber, content, config.email.subject, config, function (error, info) {
+        mailer.sendEmail(subscriber, content, config.email_subject, config.from_email, function (error, info) {
             if (error) {
                 console.log(error);
             } else {
@@ -112,8 +112,8 @@ function markSentArticles(articles) {
 }
 
 module.exports = function(config) {
-    subscribersStorage = require('../storage')(config.subscribers_file);
-    articlesStorage = require('../storage')(config.articles_file);
+    subscribersStorage = require('../utils').storage(config.subscribers_file);
+    articlesStorage = require('../utils').storage(config.articles_file);
 
     return {
         notifySubscribers: function(callback) {

@@ -41,7 +41,7 @@ function Scraper(options) {
     this.trackingFile = options.trackingFile;
 
     if (this.trackingFile) {
-        this.tracking = require('../app/storage')(this.trackingFile);
+        this.tracking = require('../utils').storage(this.trackingFile);
     }
 
     scraper_config = options;

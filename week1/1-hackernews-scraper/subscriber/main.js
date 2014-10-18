@@ -1,6 +1,6 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
-    config = require('../config').subscriber,
+    config = require('./config'),
     subscriber = require('./subscriber')(config),
     app = express();
 

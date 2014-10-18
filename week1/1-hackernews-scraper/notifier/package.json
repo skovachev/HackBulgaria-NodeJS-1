@@ -1,0 +1,14 @@
+{
+  "name": "notifier",
+  "version": "0.0.1",
+  "description": "A notifier module for the HackerNews subscription app",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stefan Kovachev",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.9.8"
+  }
+}

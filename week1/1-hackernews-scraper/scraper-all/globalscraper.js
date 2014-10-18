@@ -28,11 +28,11 @@ function addKeywords(text) {
     });
 }
 
-var Scraper = require('../../scraper');
+var Scraper = require('../scraper');
 
 module.exports = function(options) {
 
-    storage = require('../storage')(options.storageFile);
+    storage = require('../utils').storage(options.storageFile);
 
     options.handleResponse = function(response) {
         console.log('Scraper: response received');

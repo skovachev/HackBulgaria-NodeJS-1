@@ -1,6 +1,6 @@
 var storage = null,
     key_generator = require('generate-key'),
-    mailer = require('../mailer');
+    mailer = require('../utils').mailer;
 
 function createConfirmationLinkForEmail(subscriptionId, token, config) {
     return config.confirm_subscription_url + '?subscriptionId=' + subscriptionId + '&subscriptionToken=' + token;
@@ -37,7 +37,7 @@ function sendConfirmationEmail(subscriber, config) {
 }
 
 module.exports = function(config) {
-    storage = require('../storage')(config.storage_file);
+    storage = require('../utils').storage(config.storage_file);
 
     return {
         subscribe: function(info) {

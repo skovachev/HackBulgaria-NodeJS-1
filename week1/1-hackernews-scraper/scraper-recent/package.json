@@ -1,0 +1,16 @@
+{
+  "name": "scraper-recent",
+  "version": "0.0.1",
+  "description": "The scraper module for the HackerNews subscriber app",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stefan Kovachev",
+  "license": "MIT",
+  "dependencies": {
+    "q": "^1.0.1",
+    "request": "^2.45.0",
+    "sleep": "^1.1.8"
+  }
+}

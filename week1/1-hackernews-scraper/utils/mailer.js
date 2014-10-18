@@ -1,22 +1,23 @@
-var mailer = require('nodemailer');
+var mailer = require('nodemailer'),
+    credentials = require('./gmail_credentials');
 
-function configureMailerTransporter(mailer, config) {
+function configureMailerTransporter(mailer) {
     var transporter = mailer.createTransport({
         service: 'Gmail',
         auth: {
-            user: config.gmail.address,
-            pass: config.gmail.pass
+            user: credentials.address,
+            pass: credentials.pass
         }
     });
 
     return transporter;
 }
 
-function sendEmail(subscriber, content, subject, config, callback) {
-    var transporter = configureMailerTransporter(mailer, config);
+function sendEmail(subscriber, content, subject, from_email, callback) {
+    var transporter = from_emailureMailerTransporter(mailer);
 
     var mailOptions = {
-        from: config.email.from,
+        from: from_email,
         to: subscriber.email,
         subject: subject,
         text: typeof content === 'string' ? content : content.text,

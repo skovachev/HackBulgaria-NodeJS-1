@@ -1,5 +1,5 @@
 var express = require('express'),
-    config = require('../config').notifier,
+    config = require('./config'),
     notifier = require('./notifier')(config),
     app = express();
 
