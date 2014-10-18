@@ -4,6 +4,7 @@ var articlesStorage = null,
     sleep = require('sleep'),
     scraper_config = null,
     request = require('request'),
+    Q = require('q'),
 
     callbacks = [],
     articles = [],
@@ -20,10 +21,10 @@ var articlesStorage = null,
         });
     },
 
-    getArticle = function(id, config, callback) {
-        var url = config.article_url.replace(/\{id\}/, id);
+    getItem = function(id, config, callback) {
+        var url = config.item_url.replace(/\{id\}/, id);
 
-        console.log('Loading article with id: ', id, ', and url: ', url);
+        console.log('Loading item with id: ', id, ', and url: ', url);
 
         https.get(url, function(res) {
             res.on('data', function(data) {
@@ -32,12 +33,79 @@ var articlesStorage = null,
         }).on('error', function(e) {
             callback(null, e);
         });
-    };
+    },
 
-function addArticle(article) {
-    if (article.type === 'story' && !article.deleted) {
-        console.log('Adding new article: ', article.title);
-        articles.push(article);
+    add_handlers = {};
+
+add_handlers['story'] = function(article, callback) {
+    console.log('Adding new article: ', article.title);
+    articles.push(article);
+    callback();
+};
+
+add_handlers['comment'] = function(comment, callback) {
+    console.log('Adding new comment: ', comment.text);
+
+    getParentArticle(comment).then(function(article){
+            console.log('Saving comment with article...');
+
+            comment.parentArticleId = article.id;
+
+            var articleInCache = searchInCache(article.id);
+            if (!articleInCache) {
+                addItem(article, function(){});
+            }
+            articles.push(comment);
+
+            console.log('call callback', callback);
+            callback();
+
+        }, function(error){
+            console.log('Could not get parent article for comment ('+comment.id+'): ' + error);
+        });
+};
+
+function searchInCache (id) {
+    return articlesStorage.findIn(['new_articles', 'articles'], function(element, index, array){
+        return element.id === id;
+    });
+}
+
+function getParentItem(item, promise) {
+    var parent = searchInCache(item.id);
+
+    if (parent) {
+        promise.resolve(parent);
+    }
+    else {
+        getItem(item.parent, scraper_config, function(json, error){
+            if (error) {
+                promise.reject(new Error(error));
+            }
+            else {
+                if (json.type !== 'story') {
+                    console.log('Found parent comment with id: ' + json.id + '. Loading next parent...');
+                    getParentItem(json, promise);
+                }
+                else {
+                    console.log('Found parent article with id: ' + json.id);
+                    promise.resolve(json);
+                }
+            }
+        });
+    }
+}
+
+function getParentArticle(comment) {
+    var deferred = Q.defer();
+    getParentItem(comment, deferred);
+    return deferred.promise;
+}
+
+function addItem(item, callback) {
+    var acceptedTypes = Object.keys(add_handlers);
+    if (acceptedTypes.indexOf(item.type) !== -1 && !item.deleted) {
+        return add_handlers[item.type](item, callback);
     }
 }
 
@@ -72,9 +140,13 @@ function start() {
             for (i = last_max_item + 1; i <= current_max_item; i++) {
                 (function(number) {
                     callbacks.push(function() {
-                        getArticle(number, scraper_config, function(article, error) {
-                            addArticle(article);
-                            nextCallback();
+                        getItem(number, scraper_config, function(item, error) {
+                            if (!error) {
+                                addItem(item, nextCallback);
+                            }
+                            else {
+                                nextCallback();
+                            }
                         });
                     });
                 })(i);
