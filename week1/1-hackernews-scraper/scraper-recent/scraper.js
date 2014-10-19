@@ -1,39 +1,10 @@
 var articlesStorage = null,
-    https = require('https'),
-    sleep = require('sleep'),
     scraper_config = null,
+
     request = require('request'),
     Q = require('q'),
 
-    callbacks = [],
     articles = [],
-
-    getMaxItem = function(config, callback) {
-        var url = config.max_item_url;
-        console.log('Getting new max item from url: ', url);
-        https.get(url, function(res) {
-            res.on('data', function(data) {
-                callback(data);
-            });
-        }).on('error', function(e) {
-            callback(null, e);
-        });
-    },
-
-    getItem = function(id, config, callback) {
-        var url = config.item_url.replace(/\{id\}/, id);
-
-        console.log('Loading item with id: ', id, ', and url: ', url);
-
-        https.get(url, function(res) {
-            res.on('data', function(data) {
-                callback(JSON.parse(data));
-            });
-        }).on('error', function(e) {
-            callback(null, e);
-        });
-    },
-
     add_handlers = {};
 
 add_handlers['story'] = function(article, callback) {
@@ -56,7 +27,6 @@ add_handlers['comment'] = function(comment, callback) {
             }
             articles.push(comment);
 
-            console.log('call callback', callback);
             callback();
 
         }, function(error){
@@ -70,35 +40,8 @@ function searchInCache (id) {
     });
 }
 
-function getParentItem(item, promise) {
-    var parent = searchInCache(item.id);
-
-    if (parent) {
-        promise.resolve(parent);
-    }
-    else {
-        getItem(item.parent, scraper_config, function(json, error){
-            if (error) {
-                promise.reject(new Error(error));
-            }
-            else {
-                if (json.type !== 'story') {
-                    console.log('Found parent comment with id: ' + json.id + '. Loading next parent...');
-                    getParentItem(json, promise);
-                }
-                else {
-                    console.log('Found parent article with id: ' + json.id);
-                    promise.resolve(json);
-                }
-            }
-        });
-    }
-}
-
 function getParentArticle(comment) {
-    var deferred = Q.defer();
-    getParentItem(comment, deferred);
-    return deferred.promise;
+    return scraper.getParentItemOfType(comment, 'story');
 }
 
 function addItem(item, callback) {
@@ -121,84 +64,48 @@ function notifyNewArticles() {
     });
 }
 
-function start() {
-    var last_max_item = parseInt(articlesStorage.read('max_item', scraper_config.initial_max_item), 10);
+function saveScrapedItems() {
+    var old_articles = articlesStorage.read('new_articles', []);
+    // old_articles = !old_articles || typeof old_articles === 'object' ? [] : old_articles;
 
-    console.log('Scraper started with last article number: ', last_max_item);
-
-    getMaxItem(scraper_config, function(current_max_item, error) {
-        if (error) throw error;
-
-        current_max_item = parseInt(current_max_item, 10);
-
-        console.log('New max item: ', current_max_item);
-
-        var new_articles = current_max_item - last_max_item;
-
-        if (new_articles > 0) {
-            for (i = last_max_item + 1; i <= current_max_item; i++) {
-                (function(number) {
-                    callbacks.push(function() {
-                        getItem(number, scraper_config, function(item, error) {
-                            if (!error) {
-                                addItem(item, nextCallback);
-                            }
-                            else {
-                                nextCallback();
-                            }
-                        });
-                    });
-                })(i);
-            }
-
-            articlesStorage.write('max_item', current_max_item);
-            // articlesStorage.persistSync();
-            nextCallback();
-        } else {
-            console.log('No new articles');
-        }
-
+    articles.forEach(function(article) {
+        old_articles.push(article);
     });
+    articlesStorage.write('new_articles', old_articles);
 
+    console.log('New items saved in database');
 }
 
-function nextCallback() {
-    if (callbacks.length === 0) {
-        // save articles
-        var old_articles = articlesStorage.read('new_articles', []);
-        old_articles = !old_articles || typeof old_articles === 'object' ? [] : old_articles;
+module.exports = function(options) {
+    scraper_config = config;
 
-        console.log("New articles before update: ", old_articles);
+    articlesStorage = require('../utils').storage(options.articles_file);
 
-        articles.forEach(function(article) {
-            old_articles.push(article);
-        });
-        articlesStorage.write('new_articles', old_articles);
-        // articlesStorage.persistSync();
+    options.handleResponse = function(response, callback) {
+        console.log('Scraper: response received');
+        addItem(response, callback);
+    };
 
-        console.log("New articles after update: ", articlesStorage.read('new_articles', []));
+    options.onFeedEndReached = function() {
+        saveScrapedItems();
 
         if (articles.length > 0) {
+            console.log('Notifying subscribers');
             notifyNewArticles();
         }
 
         articles = [];
-
-        sleep.sleep(2 * 60); // 2 min sleep
-
-        start();
-    } else {
-        var callback = callbacks.pop();
-        callback();
-    }
-}
-
-module.exports = function(config) {
-    scraper_config = config;
-
-    articlesStorage = require('../utils').storage(scraper_config.articles_file);
-
-    return {
-        start: start
     };
+
+    options.checkInCache = function(id) {
+        return searchInCache(id);
+    };
+
+    options.trackingFile = options.articles_file;
+    options.sleepAfterNoItems = 2 * 60; // 2 min
+    options.startingNumber = options.initial_max_item;
+
+    var scraper = new Scraper(options);
+
+    return scraper;
 };

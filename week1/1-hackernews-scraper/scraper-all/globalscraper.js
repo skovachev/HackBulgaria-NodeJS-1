@@ -2,7 +2,7 @@ var storage = null,
     natural = require('natural'),
     tokenizer = new natural.WordTokenizer();
 
-function addItem(item) {
+function parseItemText(item) {
     if (item.type === 'comment') {
         addKeywords(item.text);
     }
@@ -36,7 +36,7 @@ module.exports = function(options) {
 
     options.handleResponse = function(response) {
         console.log('Scraper: response received');
-        addItem(response);
+        parseItemText(response);
     };
 
     var scraper = new Scraper(options);
