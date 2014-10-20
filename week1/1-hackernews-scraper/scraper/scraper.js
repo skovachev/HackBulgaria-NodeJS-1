@@ -1,9 +1,9 @@
 var https = require('https'),
     sleep = require('sleep'),
     Q = require('q'),
+
     scraper_config = null,
-    callbacks = [],
-    articles = [],
+    scraper = null,
 
     getMaxItem = function(config, callback) {
         var url = config.maxItemUrl;
@@ -33,8 +33,8 @@ var https = require('https'),
 
 function Scraper(options) {
     this.startingNumber = options.startingNumber || 1;
-    this.sleepAfterRequest = options.sleepAfterRequest || 2; // 2 sec
-    this.sleepAfterNoItems = options.sleepAfterNoItems || 60; // 1 min
+    this.sleepAfterRequest = typeof options.sleepAfterRequest !== 'undefined' ? options.sleepAfterRequest : 2; // 2 sec
+    this.sleepAfterNoItems = typeof options.sleepAfterNoItems !== 'undefined' ? options.sleepAfterNoItems : 60; // 60 sec
     this.handleResponse = options.handleResponse || function(response) {
         console.log('Scraper:: response received');
         console.log(response);
@@ -50,18 +50,21 @@ function Scraper(options) {
     }
 
     scraper_config = options;
+    scraper = this;
 }
  
 function onRequestEnd(max_item) {
     this.tracking.write('max_item', max_item);
-    console.log('Sleeping 2 sec');
-    sleep.sleep(this.sleepAfterRequest); // sec
+    if (this.sleepAfterRequest > 0) {
+        console.log('Sleeping ' + this.sleepAfterRequest + ' sec');
+        sleep.sleep(this.sleepAfterRequest); // sec
+    }
     this.start();
 }
 
 function getParentItem(item, parent_type, promise) {
     // check in cache first
-    var parent = this.checkInCache(item.id);
+    var parent = scraper.checkInCache(item.parent);
 
     if (parent) {
         promise.resolve(parent);
@@ -74,7 +77,7 @@ function getParentItem(item, parent_type, promise) {
             else {
                 if (json.type !== parent_type) {
                     console.log('Found parent of wrong type with id: ' + json.id + '. Loading next parent...');
-                    getParentItem(json, promise);
+                    getParentItem(json, parent_type, promise);
                 }
                 else {
                     console.log('Found parent of type '+parent_type+' with id: ' + json.id);
@@ -87,7 +90,7 @@ function getParentItem(item, parent_type, promise) {
 
 Scraper.prototype.getParentItemOfType = function(child, parent_type) {
     var deferred = Q.defer();
-    getParentItem.apply(this, [child, parent_type, deferred]);
+    getParentItem(child, parent_type, deferred);
     return deferred.promise;
 };
 
@@ -95,7 +98,7 @@ Scraper.prototype.start = function () {
     var last_max_item = parseInt(this.tracking.read('max_item', this.startingNumber), 10),
         that = this;
 
-    console.log('Scraper started with last number: ', last_max_item);
+    console.log('\n---------------\nNew scrape request started with last number: ' + last_max_item);
 
     getMaxItem(scraper_config, function(current_max_item, error) {
         if (error) throw error;
@@ -119,8 +122,8 @@ Scraper.prototype.start = function () {
                 }
             });
         } else {
-            console.log('No new items');
             that.onFeedEndReached();
+            console.log('No new items in feed. Sleeping for ' + that.sleepAfterNoItems + ' secs');
             sleep.sleep(that.sleepAfterNoItems); // sec
             that.start();
         }

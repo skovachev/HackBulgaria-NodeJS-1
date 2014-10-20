@@ -3,31 +3,34 @@ var articlesStorage = null,
 
     request = require('request'),
     Q = require('q'),
+    Scraper = require('../scraper'),
 
     articles = [],
     add_handlers = {};
 
-add_handlers['story'] = function(article, callback) {
+add_handlers['story'] = function(article, done) {
     console.log('Adding new article: ', article.title);
     articles.push(article);
-    callback();
+    done();
 };
 
-add_handlers['comment'] = function(comment, callback) {
-    console.log('Adding new comment: ', comment.text);
+add_handlers['comment'] = function(comment, done) {
+    console.log('Adding new comment: #' + comment.id);
 
-    getParentArticle(comment).then(function(article){
-            console.log('Saving comment with article...');
+    var scraper = this;
+
+    getParentArticle.apply(this, [comment]).then(function(article){
+            console.log('Saving comment with article: #' + article.id);
 
             comment.parentArticleId = article.id;
 
             var articleInCache = searchInCache(article.id);
             if (!articleInCache) {
-                addItem(article, function(){});
+                addItem.apply(scraper, [article, function(){}]);
             }
             articles.push(comment);
 
-            callback();
+            done();
 
         }, function(error){
             console.log('Could not get parent article for comment ('+comment.id+'): ' + error);
@@ -41,21 +44,24 @@ function searchInCache (id) {
 }
 
 function getParentArticle(comment) {
-    return scraper.getParentItemOfType(comment, 'story');
+    return this.getParentItemOfType(comment, 'story');
 }
 
-function addItem(item, callback) {
+function addItem(item, done) {
     var acceptedTypes = Object.keys(add_handlers);
     if (acceptedTypes.indexOf(item.type) !== -1 && !item.deleted) {
-        return add_handlers[item.type](item, callback);
+        return add_handlers[item.type].apply(this, [item, done]);
+    }
+    else {
+        done();
     }
 }
 
 function notifyNewArticles() {
-    console.log('Notify new articles... at ', scraper_config.notifier_url);
-    // http.post(scraper_config.notifier_url);
+    console.log('Notify new articles... at ', scraper_config.notifierUrl);
+
     request({
-        uri: scraper_config.notifier_url,
+        uri: scraper_config.notifierUrl,
         method: 'POST',
     }, function(error, response, body) {
         if (error) {
@@ -66,24 +72,23 @@ function notifyNewArticles() {
 
 function saveScrapedItems() {
     var old_articles = articlesStorage.read('new_articles', []);
-    // old_articles = !old_articles || typeof old_articles === 'object' ? [] : old_articles;
 
     articles.forEach(function(article) {
         old_articles.push(article);
     });
     articlesStorage.write('new_articles', old_articles);
 
-    console.log('New items saved in database');
+    console.log('Collected items saved in database');
 }
 
 module.exports = function(options) {
-    scraper_config = config;
+    scraper_config = options;
 
-    articlesStorage = require('../utils').storage(options.articles_file);
+    articlesStorage = require('../utils').storage(options.articlesFile);
 
-    options.handleResponse = function(response, callback) {
+    options.handleResponse = function(response, done) {
         console.log('Scraper: response received');
-        addItem(response, callback);
+        addItem.apply(this, [response, done]);
     };
 
     options.onFeedEndReached = function() {
@@ -101,9 +106,7 @@ module.exports = function(options) {
         return searchInCache(id);
     };
 
-    options.trackingFile = options.articles_file;
-    options.sleepAfterNoItems = 2 * 60; // 2 min
-    options.startingNumber = options.initial_max_item;
+    options.trackingFile = options.articlesFile;
 
     var scraper = new Scraper(options);
 

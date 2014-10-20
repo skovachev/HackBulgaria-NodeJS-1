@@ -1,6 +1,7 @@
 var storage = null,
     natural = require('natural'),
-    tokenizer = new natural.WordTokenizer();
+    tokenizer = new natural.WordTokenizer(),
+    Scraper = require('../scraper');
 
 function parseItemText(item) {
     if (item.type === 'comment') {
@@ -28,15 +29,16 @@ function addKeywords(text) {
     });
 }
 
-var Scraper = require('../scraper');
+
 
 module.exports = function(options) {
 
     storage = require('../utils').storage(options.storageFile);
 
-    options.handleResponse = function(response) {
+    options.handleResponse = function(response, done) {
         console.log('Scraper: response received');
         parseItemText(response);
+        done();
     };
 
     var scraper = new Scraper(options);

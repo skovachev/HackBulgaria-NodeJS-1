@@ -14,7 +14,7 @@ function configureMailerTransporter(mailer) {
 }
 
 function sendEmail(subscriber, content, subject, from_email, callback) {
-    var transporter = from_emailureMailerTransporter(mailer);
+    var transporter = configureMailerTransporter(mailer);
 
     var mailOptions = {
         from: from_email,

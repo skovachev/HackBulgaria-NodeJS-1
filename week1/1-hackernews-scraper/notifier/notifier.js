@@ -8,13 +8,11 @@ var subscribersStorage = null,
     },
 
     createEmailContent = function(messages) {
-        var content = 'Here\'s your list of new items on HackerNews: \n';
+        var content = 'Here\'s your list of new items on HackerNews: \n\n';
 
         messages.forEach(function(message) {
             content += message + '\n\n';
         });
-
-        console.log('Email content: ', content);
 
         return content;
     },
@@ -40,28 +38,24 @@ var subscribersStorage = null,
             } else {
                 console.log('Message sent: ' + info.response);
             }
+            console.log('\n------------------\n\n');
         });
     };
 
-var subscription_handlers = [];
+var subscription_handlers = {};
 
 // add articles email handler
-subscription_handlers.push({
-
-    forType: 'story',
+subscription_handlers['story'] = {
 
     textField: 'title',
 
     createMessage: function(article) {
         return '(article)\n'+ article.title + ' - ' + article.url;
     }
-
-});
+};
 
 // add comments email handler
-subscription_handlers.push({
-
-    forType: 'comment',
+subscription_handlers['comment'] = {
 
     textField: 'text',
 
@@ -72,10 +66,10 @@ subscription_handlers.push({
 
         return '(comment)\n' + comment.text + '\n(in article)\n' + parentArticle.title + ' - ' + parentArticle.url;
     }
-
-});
+};
 
 function markSentArticles(articles) {
+    console.log('Marking articles as sent.');
     // mark articles as sent
     var old_articles = articlesStorage.read('articles', []);
     articles.forEach(function(article) {
@@ -96,13 +90,15 @@ module.exports = function(config) {
             var subscribers = subscribersStorage.read('subscriptions', {}),
                 articles = articlesStorage.read('new_articles', []);
 
-            console.log('Subscriptions:', subscribers);
-            console.log('New articles: ', articles);
+            console.log('Number of subscriptions: ' + Object.keys(subscribers).length);
+            console.log('Number of new items: ' + articles.length);
 
             Object.keys(subscribers).forEach(function(subscriber_id) {
                 var subscriber = subscribers[subscriber_id];
 
                 if (subscriber.verified) { // send emails only to verified subscribers
+
+                    console.log('Processing subscription for: ' + subscriber.email);
 
                     var messages = [],
                         type_handlers = subscription_handlers.filter(function(subscription_handler){
@@ -114,7 +110,7 @@ module.exports = function(config) {
                             textField = subscription_handler.textField;
 
                         articles.forEach(function(article) {
-                            var couldMatchWords = article.type === subscription_handler.type && typeof article[subscription_handler.textField] !== 'undefined';
+                            var couldMatchWords = article.type === subscription_handler.forType && typeof article[subscription_handler.textField] !== 'undefined';
 
                             if (couldMatchWords && contentMatchesWords(article[subscription_handler.textField], subscriber.keywords)) {
                                 matched_items.push(article);
@@ -128,12 +124,14 @@ module.exports = function(config) {
                         }
                     });
 
+                    console.log(messages.length + ' new items found for subscription.');
+
                     if (messages.length > 0) {
                         sendNotificationEmail(subscriber, messages, config);
                     }
-
-                    // markSentArticles(articles);
                 }
+
+                markSentArticles(articles);
             });
 
             if (typeof callback === 'function') {

@@ -9,6 +9,7 @@
   "author": "Stefan Kovachev",
   "license": "MIT",
   "dependencies": {
+    "q": "^1.0.1",
     "sleep": "^1.1.8"
   }
 }
