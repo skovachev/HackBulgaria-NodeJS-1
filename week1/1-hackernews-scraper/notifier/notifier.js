@@ -30,9 +30,9 @@ var subscribersStorage = null,
                 text: emailContent,
                 html: emailContent.replace(/\n/g, '<br>')
             };
-            
 
-        mailer.sendEmail(subscriber, content, config.email_subject, config.from_email, function (error, info) {
+
+        mailer.sendEmail(subscriber, content, config.email_subject, config.from_email, function(error, info) {
             if (error) {
                 console.log(error);
             } else {
@@ -50,7 +50,7 @@ subscription_handlers['story'] = {
     textField: 'title',
 
     createMessage: function(article) {
-        return '(article)\n'+ article.title + ' - ' + article.url;
+        return '(article)\n' + article.title + ' - ' + article.url;
     }
 };
 
@@ -70,7 +70,7 @@ subscription_handlers['comment'] = {
 
 function markSentArticles(articles) {
     console.log('Marking articles as sent.');
-    // mark articles as sent
+
     var old_articles = articlesStorage.read('articles', []);
     articles.forEach(function(article) {
         old_articles.push(article);
@@ -88,10 +88,10 @@ module.exports = function(config) {
             console.log('Notifying subscribers...');
 
             var subscribers = subscribersStorage.read('subscriptions', {}),
-                articles = articlesStorage.read('new_articles', []);
+                items = articlesStorage.read('new_articles', []);
 
             console.log('Number of subscriptions: ' + Object.keys(subscribers).length);
-            console.log('Number of new items: ' + articles.length);
+            console.log('Number of new items: ' + items.length);
 
             Object.keys(subscribers).forEach(function(subscriber_id) {
                 var subscriber = subscribers[subscriber_id];
@@ -100,28 +100,26 @@ module.exports = function(config) {
 
                     console.log('Processing subscription for: ' + subscriber.email);
 
-                    var messages = [],
-                        type_handlers = subscription_handlers.filter(function(subscription_handler){
-                            return subscriber.type.indexOf(subscription_handler.forType) !== -1;
-                        });
+                    var messages = [];
 
-                    type_handlers.forEach(function(subscription_handler){
-                        var matched_items = [],
-                            textField = subscription_handler.textField;
+                    items.forEach(function(item) {
+                        if (subscriber.type.indexOf(item.type) !== -1) {
+                            // subscriber is interested in this item
 
-                        articles.forEach(function(article) {
-                            var couldMatchWords = article.type === subscription_handler.forType && typeof article[subscription_handler.textField] !== 'undefined';
+                            var type_handler = subscription_handlers[item.type];
 
-                            if (couldMatchWords && contentMatchesWords(article[subscription_handler.textField], subscriber.keywords)) {
-                                matched_items.push(article);
+                            // if item type can be handled
+                            if (type_handler) {
+                                var couldMatchWords = typeof item[type_handler.textField] !== 'undefined';
+
+                                // if item matches subscription keywords
+                                if (couldMatchWords && contentMatchesWords(item[type_handler.textField], subscriber.keywords)) {
+                                    // add item to email
+                                    messages.push(type_handler.createMessage(item));
+                                }
                             }
-                        });
-
-                        if (matched_items.length > 0) {
-                            matched_items.forEach(function(item){
-                                messages.push(subscription_handler.createMessage(item));
-                            });
                         }
+
                     });
 
                     console.log(messages.length + ' new items found for subscription.');
@@ -131,7 +129,7 @@ module.exports = function(config) {
                     }
                 }
 
-                markSentArticles(articles);
+                markSentArticles(items);
             });
 
             if (typeof callback === 'function') {

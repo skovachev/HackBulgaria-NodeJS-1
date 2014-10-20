@@ -27,7 +27,7 @@ function sendConfirmationEmail(subscriber, config) {
         link = createConfirmationLinkForEmail(subscriber.subscriberId, token, config),
         content = generateConfirmationEmailContent(subscriber, link);
 
-    mailer.sendEmail(subscriber, content, config.email.subject, config, function(error, info) {
+    mailer.sendEmail(subscriber, content, config.email_subject, config, function(error, info) {
         if (error) {
             console.log(error);
         } else {
@@ -51,7 +51,7 @@ module.exports = function(config) {
                 subscription_type = ['story'];
             }
 
-            if (! (subscription_type instanceof Array)) {
+            if (!(subscription_type instanceof Array)) {
                 return {
                     "error": 'Invalid subscription type'
                 };
@@ -84,6 +84,8 @@ module.exports = function(config) {
             if (typeof subscriptions[subscriberId] !== 'undefined') {
                 delete subscriptions[subscriberId];
             }
+
+            storage.write('subscriptions', subscriptions);
 
             return info;
         },

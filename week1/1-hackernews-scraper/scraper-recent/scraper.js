@@ -19,26 +19,26 @@ add_handlers['comment'] = function(comment, done) {
 
     var scraper = this;
 
-    getParentArticle.apply(this, [comment]).then(function(article){
-            console.log('Saving comment with article: #' + article.id);
+    getParentArticle.apply(this, [comment]).then(function(article) {
+        console.log('Saving comment with article: #' + article.id);
 
-            comment.parentArticleId = article.id;
+        comment.parentArticleId = article.id;
 
-            var articleInCache = searchInCache(article.id);
-            if (!articleInCache) {
-                addItem.apply(scraper, [article, function(){}]);
-            }
-            articles.push(comment);
+        var articleInCache = searchInCache(article.id);
+        if (!articleInCache) {
+            addItem.apply(scraper, [article, function() {}]);
+        }
+        articles.push(comment);
 
-            done();
+        done();
 
-        }, function(error){
-            console.log('Could not get parent article for comment ('+comment.id+'): ' + error);
-        });
+    }, function(error) {
+        console.log('Could not get parent article for comment (' + comment.id + '): ' + error);
+    });
 };
 
-function searchInCache (id) {
-    return articlesStorage.findIn(['new_articles', 'articles'], function(element, index, array){
+function searchInCache(id) {
+    return articlesStorage.findIn(['new_articles', 'articles'], function(element, index, array) {
         return element.id === id;
     });
 }
@@ -51,8 +51,7 @@ function addItem(item, done) {
     var acceptedTypes = Object.keys(add_handlers);
     if (acceptedTypes.indexOf(item.type) !== -1 && !item.deleted) {
         return add_handlers[item.type].apply(this, [item, done]);
-    }
-    else {
+    } else {
         done();
     }
 }

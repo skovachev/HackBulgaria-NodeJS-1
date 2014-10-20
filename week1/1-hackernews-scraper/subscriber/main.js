@@ -31,8 +31,7 @@ app.get('/confirmSubscription', function(req, res) {
 
     if (typeof subscriptionKey === 'undefined' || typeof subscriptionToken === 'undefined') {
         res.status(500).send('Subscription data is invalid');
-    }
-    else {
+    } else {
         subscriber.confirmSubscription(subscriptionKey, subscriptionToken);
         res.send('Yout subscription has been confirmed!');
     }

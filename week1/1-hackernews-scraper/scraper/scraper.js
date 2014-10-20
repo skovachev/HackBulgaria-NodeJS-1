@@ -40,7 +40,7 @@ function Scraper(options) {
         console.log(response);
     };
     this.trackingFile = options.trackingFile;
-    this.onFeedEndReached = options.onFeedEndReached || function(){};
+    this.onFeedEndReached = options.onFeedEndReached || function() {};
     this.checkInCache = options.checkInCache || function(id) {
         return null;
     };
@@ -52,7 +52,7 @@ function Scraper(options) {
     scraper_config = options;
     scraper = this;
 }
- 
+
 function onRequestEnd(max_item) {
     this.tracking.write('max_item', max_item);
     if (this.sleepAfterRequest > 0) {
@@ -68,19 +68,16 @@ function getParentItem(item, parent_type, promise) {
 
     if (parent) {
         promise.resolve(parent);
-    }
-    else {
-        getItem(item.parent, scraper_config, function(json, error){
+    } else {
+        getItem(item.parent, scraper_config, function(json, error) {
             if (error) {
                 promise.reject(new Error(error));
-            }
-            else {
+            } else {
                 if (json.type !== parent_type) {
                     console.log('Found parent of wrong type with id: ' + json.id + '. Loading next parent...');
                     getParentItem(json, parent_type, promise);
-                }
-                else {
-                    console.log('Found parent of type '+parent_type+' with id: ' + json.id);
+                } else {
+                    console.log('Found parent of type ' + parent_type + ' with id: ' + json.id);
                     promise.resolve(json);
                 }
             }
@@ -94,7 +91,7 @@ Scraper.prototype.getParentItemOfType = function(child, parent_type) {
     return deferred.promise;
 };
 
-Scraper.prototype.start = function () {
+Scraper.prototype.start = function() {
     var last_max_item = parseInt(this.tracking.read('max_item', this.startingNumber), 10),
         that = this;
 
@@ -113,11 +110,10 @@ Scraper.prototype.start = function () {
             current_max_item = last_max_item + 1;
             getItem(current_max_item, scraper_config, function(item, error) {
                 if (!error && typeof that.handleResponse === 'function') {
-                    that.handleResponse(item, function(){
+                    that.handleResponse(item, function() {
                         onRequestEnd.apply(that, [current_max_item]);
                     });
-                }
-                else {
+                } else {
                     onRequestEnd.apply(that, [current_max_item]);
                 }
             });
