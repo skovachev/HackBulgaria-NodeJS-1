@@ -5,16 +5,15 @@ var express = require('express'),
     url = require('url');
 
 app.all("*", function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", ["X-Requested-With", "Content-Type", "Access-Control-Allow-Methods"]);
-  res.header("Access-Control-Allow-Methods", ["GET"]);
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", ["X-Requested-With", "Content-Type", "Access-Control-Allow-Methods"]);
+    res.header("Access-Control-Allow-Methods", ["GET"]);
+    next();
 });
 
 app.get('/keywords', function(req, res) {
     var queryData = url.parse(req.url, true).query;
-    globalscraper.showRankedResults(function(results){
-        // rank, keyword, count
+    globalscraper.showRankedResults(function(results) {
         res.json(results);
     }, queryData.fromPosition || 0, queryData.direction || 'next');
 });

@@ -9,6 +9,7 @@ if (!source_file) {
         collection_name = path.basename(collection_name, '.json'),
         source_data = require(source_file);
 
+    // if data is not array - need to convert it so that it can fit in a mongo database
     if (Object.prototype.toString.call(source_data) !== '[object Array]') {
         var data = [];
         Object.keys(source_data).forEach(function(key) {

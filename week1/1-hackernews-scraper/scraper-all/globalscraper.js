@@ -24,8 +24,8 @@ function addKeywords(text, done) {
 
     var insertables = [];
 
-    storage.readMany(Object.keys(occurrences), function(results){
-        results.forEach(function(result){
+    storage.readMany(Object.keys(occurrences), function(results) {
+        results.forEach(function(result) {
             if (occurrences[result.key]) {
                 occurrences[result.key] = result.value + occurrences[result.key];
             }
@@ -63,13 +63,15 @@ module.exports = function(options) {
 
     // rank, keyword, count
     scraper.showRankedResults = function(done, from, direction) {
+        var per_page = 10;
+
         from = parseInt(from, 10);
-        from  = direction === 'next' ? from : from - 20;
-        
-        return storage.readRankedByCount(function(results){
+        from = direction === 'next' ? from : from - 2*per_page;
+
+        return storage.readRankedByCount(function(results) {
             var restructured = [],
                 index = 1;
-            results.forEach(function(result){
+            results.forEach(function(result) {
                 restructured.push({
                     rank: from + index,
                     keyword: result.key,
@@ -79,10 +81,10 @@ module.exports = function(options) {
             });
 
             done(restructured);
-        }, from, direction);
+        }, from, direction, per_page);
     };
 
-    
+
 
     return scraper;
 };
