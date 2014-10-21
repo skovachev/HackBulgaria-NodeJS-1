@@ -1,7 +1,9 @@
 var storage = require('./storage'),
-    mailer = require('./mailer');
+    mailer = require('./mailer'),
+    mongostorage = require('./mongostorage');
 
 module.exports = {
     storage: storage,
-    mailer: mailer
+    mailer: mailer,
+    mongostorage: mongostorage
 };

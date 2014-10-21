@@ -3,17 +3,17 @@ var storage = null,
     tokenizer = new natural.WordTokenizer(),
     Scraper = require('../scraper');
 
-function parseItemText(item) {
+function parseItemText(item, done) {
     if (item.type === 'comment') {
-        addKeywords(item.text);
+        addKeywords(item.text, done);
     } else if (item.type === 'story') {
-        addKeywords(item.title);
+        addKeywords(item.title, done);
     }
 }
 
-function addKeywords(text) {
+function addKeywords(text, done) {
     var words = tokenizer.tokenize(text),
-        occurrences = {};
+        occurrences = {}
 
     words.forEach(function(word) {
         word = word.toLowerCase();
@@ -22,9 +22,25 @@ function addKeywords(text) {
         occurrences[word] = count;
     });
 
-    Object.keys(occurrences).forEach(function(key) {
-        var count = occurrences[key];
-        storage.write(key, storage.read(key, 0) + count);
+    var insertables = [];
+
+    storage.readMany(Object.keys(occurrences), function(results){
+        results.forEach(function(result){
+            if (occurrences[result.key]) {
+                occurrences[result.key] = result.value + occurrences[result.key];
+            }
+        });
+
+        Object.keys(occurrences).forEach(function(key) {
+            var count = occurrences[key];
+
+            insertables.push({
+                key: key,
+                value: count
+            });
+        });
+
+        storage.writeMany(Object.keys(occurrences), insertables, done);
     });
 }
 
@@ -32,12 +48,11 @@ function addKeywords(text) {
 
 module.exports = function(options) {
 
-    storage = require('../utils').storage(options.storageFile);
+    storage = require('../utils').mongostorage(options.mongoCollection);
 
     options.handleResponse = function(response, done) {
         console.log('Scraper: response received');
-        parseItemText(response);
-        done();
+        parseItemText(response, done);
     };
 
     var scraper = new Scraper(options);

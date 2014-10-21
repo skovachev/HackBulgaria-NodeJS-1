@@ -4,5 +4,6 @@ module.exports = {
     "maxItemUrl": "https://hacker-news.firebaseio.com/v0/maxitem.json?pretty",
     "initialMaxItem": 1,
     "itemUrl": "https://hacker-news.firebaseio.com/v0/item/{id}.json?print=pretty",
-    "apiPort": 3002
+    "apiPort": 3002,
+    "mongoCollection": "histogram"
 };

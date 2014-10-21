@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "nodemailer": "^1.3.0",
+    "promised-mongo": "^0.11.1",
     "underscore": "^1.7.0"
   }
 }
