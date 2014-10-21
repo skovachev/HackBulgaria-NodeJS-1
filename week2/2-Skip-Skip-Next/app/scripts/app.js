@@ -34,7 +34,7 @@ require(["jquery", "handlebars", "bootstrap"], function($, Handlebars) {
   function fetchKeywords(data, cb) {
     $.ajax({
       type: "GET",
-      url: "http://localhost:8000/keywords",
+      url: "http://localhost:3002/keywords",
       data: data
     })
     .done(function(keywords) {
@@ -54,5 +54,10 @@ require(["jquery", "handlebars", "bootstrap"], function($, Handlebars) {
     });
   });
 
-  reloadUI();
+  // reloadUI();
+  
+  fetchKeywords({
+    fromPosition: 0,
+    direction: $(this).attr("id")
+  }, reloadUI);
 });

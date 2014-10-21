@@ -57,9 +57,32 @@ module.exports = function(options) {
 
     var scraper = new Scraper(options);
 
-    scraper.showResults = function() {
-        return storage.readAll();
+    scraper.showResults = function(done, from, direction) {
+        return storage.readAll(done, from, direction);
     };
+
+    // rank, keyword, count
+    scraper.showRankedResults = function(done, from, direction) {
+        from = parseInt(from, 10);
+        from  = direction === 'next' ? from : from - 20;
+        
+        return storage.readRankedByCount(function(results){
+            var restructured = [],
+                index = 1;
+            results.forEach(function(result){
+                restructured.push({
+                    rank: from + index,
+                    keyword: result.key,
+                    count: result.value
+                });
+                index++;
+            });
+
+            done(restructured);
+        }, from, direction);
+    };
+
+    
 
     return scraper;
 };

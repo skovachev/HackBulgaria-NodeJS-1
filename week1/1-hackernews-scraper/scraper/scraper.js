@@ -10,7 +10,13 @@ var https = require('https'),
         console.log('Getting new max item from url: ', url);
         https.get(url, function(res) {
             res.on('data', function(data) {
-                callback(data);
+                data = JSON.parse(data);
+                if (data.error) {
+                    callback(null, data.error);
+                }
+                else {
+                    callback(data);
+                }
             });
         }).on('error', function(e) {
             callback(null, e);
@@ -24,7 +30,13 @@ var https = require('https'),
 
         https.get(url, function(res) {
             res.on('data', function(data) {
-                callback(JSON.parse(data));
+                data = JSON.parse(data);
+                if (data.error) {
+                    callback(null, data.error);
+                }
+                else {
+                    callback(data);
+                }
             });
         }).on('error', function(e) {
             callback(null, e);
@@ -114,6 +126,11 @@ Scraper.prototype.start = function() {
                         onRequestEnd.apply(that, [current_max_item]);
                     });
                 } else {
+                    console.log('Error: ' + error);
+                    if (error === 'Permission denied') {
+                        console.log("API is throttling us - sleep for 5 min");
+                        sleep.sleep(5 * 60); // 5 min sleep
+                    }
                     onRequestEnd.apply(that, [current_max_item]);
                 }
             });

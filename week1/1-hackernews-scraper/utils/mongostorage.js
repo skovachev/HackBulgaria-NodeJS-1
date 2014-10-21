@@ -63,8 +63,10 @@ module.exports = function(collection) {
             return findIn(collection, keys, callback, def);
         },
 
-        readAll: function(done, def) {
-            return db[collection].find();
+        readAll: function(done, from, direction) {
+            return db[collection].find().toArray().then(function(results){
+                done(results);
+            });
         },
 
         writeMany: function(keys, items, done) {
@@ -73,6 +75,12 @@ module.exports = function(collection) {
 
         readMany: function(keys, done) {
             return db[collection].find({key: {$in: keys}}).toArray().then(function(result){
+                done(result);
+            });
+        },
+
+        readRankedByCount: function(done, from, direction) {
+            db[collection].find().sort({value: -1}).skip(from).limit(10).toArray().then(function(result){
                 done(result);
             });
         }
