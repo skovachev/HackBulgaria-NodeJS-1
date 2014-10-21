@@ -13,7 +13,7 @@ function parseItemText(item, done) {
 
 function addKeywords(text, done) {
     var words = tokenizer.tokenize(text),
-        occurrences = {}
+        occurrences = {};
 
     words.forEach(function(word) {
         word = word.toLowerCase();
