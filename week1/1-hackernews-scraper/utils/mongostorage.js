@@ -59,11 +59,11 @@ module.exports = function(collection) {
 
     return {
         write: function(key, data, done) {
-            console.log('write');
             return write(collection, key, data, done).then(function(result) {
                 done(result);
             });
         },
+        
         read: function(key, done, def) {
             return read(collection, key, done, def).then(function(result) {
                 done(result ? result : def);

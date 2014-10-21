@@ -40,7 +40,7 @@ module.exports = function(config) {
     storage = require('../utils').storage(config.storage_file);
 
     return {
-        subscribe: function(info) {
+        subscribe: function(info, done) {
             var subscriptions = storage.read('subscriptions', {}),
                 generated_id = key_generator.generateKey(),
                 subscription_type = info.type;
@@ -71,13 +71,13 @@ module.exports = function(config) {
 
             sendConfirmationEmail(subscription, config);
 
-            return {
+            done({
                 "email": info.email,
                 "subscriberId": generated_id
-            };
+            });
         },
 
-        unsubscribe: function(info) {
+        unsubscribe: function(info, done) {
             var subscriptions = storage.read('subscriptions', {}) || {},
                 subscriberId = info.subscriberId;
 
@@ -87,10 +87,10 @@ module.exports = function(config) {
 
             storage.write('subscriptions', subscriptions);
 
-            return info;
+            done(info);
         },
 
-        listSubscribers: function() {
+        listSubscribers: function(done) {
             var subscriptions = storage.read('subscriptions', {}) || {},
                 subs = [];
 
@@ -98,10 +98,10 @@ module.exports = function(config) {
                 subs.push(subscriptions[key]);
             });
 
-            return subs;
+            done(subs);
         },
 
-        confirmSubscription: function(subscriptionId, subscriptionToken) {
+        confirmSubscription: function(subscriptionId, subscriptionToken, done) {
             var savedToken = storage.read('confirmations', {})[subscriptionId];
             if (savedToken === subscriptionToken) {
                 var subscriptions = storage.read('subscriptions', {});
@@ -111,6 +111,7 @@ module.exports = function(config) {
                     storage.write('subscriptions', subscriptions);
                 }
             }
+            done();
         }
     };
 };

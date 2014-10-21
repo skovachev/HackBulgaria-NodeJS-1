@@ -4,5 +4,6 @@ module.exports = {
     'storage_file': './temp/subscribers.json',
 
     'from_email': 'HackerNews Mailer <nodejs@hackbulgaria.com>',
-    'email_subject': 'Please confirm your subscription'
+    'email_subject': 'Please confirm your subscription',
+    "mongoConnectionUrl": "mongodb://localhost:27017/nodejs-week1"
 };

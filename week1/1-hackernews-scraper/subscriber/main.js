@@ -1,26 +1,29 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
     config = require('./config'),
-    subscriber = require('./subscriber')(config),
+    subscriber = require('./mongoSubscriber')(config),
     app = express();
 
 app.use(bodyParser.json());
 
 app.post('/subscribe', function(req, res) {
     var subscriber_info = req.body;
-    var result = subscriber.subscribe(subscriber_info);
-    res.json(result);
+    subscriber.subscribe(subscriber_info, function(result){
+        res.json(result);
+    });
 });
 
 app.post('/unsubscribe', function(req, res) {
     var subscriber_info = req.body;
-    var result = subscriber.unsubscribe(subscriber_info);
-    res.json(result);
+    subscriber.unsubscribe(subscriber_info, function(result){
+        res.json(result);
+    });
 });
 
 app.get('/listSubscribers', function(req, res) {
-    var subscribers = subscriber.listSubscribers();
-    res.json(subscribers);
+    var subscribers = subscriber.listSubscribers(function(subscribers){
+        res.json(subscribers);
+    });
 });
 
 app.get('/confirmSubscription', function(req, res) {
@@ -32,8 +35,9 @@ app.get('/confirmSubscription', function(req, res) {
     if (typeof subscriptionKey === 'undefined' || typeof subscriptionToken === 'undefined') {
         res.status(500).send('Subscription data is invalid');
     } else {
-        subscriber.confirmSubscription(subscriptionKey, subscriptionToken);
-        res.send('Yout subscription has been confirmed!');
+        subscriber.confirmSubscription(subscriptionKey, subscriptionToken, function(){
+            res.send('Yout subscription has been confirmed!');
+        });
     }
 });
 
