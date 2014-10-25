@@ -1,0 +1,16 @@
+{
+  "name": "geo-server",
+  "version": "0.0.1",
+  "description": "Server to save / load locations for the Save-It, Find-It apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stefan Kovachev",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.9.1",
+    "express": "^4.10.0",
+    "mongoose": "^3.8.18"
+  }
+}
