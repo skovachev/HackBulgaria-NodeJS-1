@@ -46,9 +46,7 @@ require(['jquery','async!http://maps.google.com/maps/api/js?sensor=false', 'jque
         }
 
         // *** Insert the get locations $.ajax logic here and call showPoints ***
-        alert(JSON.stringify(data, null, 4));
-
-        console.log(data);
+        // alert(JSON.stringify(data, null, 4));
 
         var params = [];
         params.push('range=' + data.range);
@@ -67,7 +65,6 @@ require(['jquery','async!http://maps.google.com/maps/api/js?sensor=false', 'jque
                 showPoints(locations);
             },
             error: function(message) {
-                console.log(message);
                 alert(message);
             }
         });
@@ -106,7 +103,7 @@ require(['jquery','async!http://maps.google.com/maps/api/js?sensor=false', 'jque
                 return function() {
                     largeMap.panTo(marker.getPosition());
                     largeMap.setZoom(4);
-                }
+                };
             })(marker, i));
         });
     }

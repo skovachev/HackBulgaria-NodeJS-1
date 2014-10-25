@@ -1,19 +1,9 @@
-var mongoose = require('mongoose'),
-    express = require('express'),
+var express = require('express'),
     bodyParser = require('body-parser'),
     url = require("url"),
     app = express(),
-    Schema = mongoose.Schema;
-
-var LocationSchema = new Schema({
-  name : String,
-  position : [Number],
-  tags: [String]
-}, { collection: 'locations' });
-
-var Location = mongoose.model('Location', LocationSchema);
-
-mongoose.connect("mongodb://localhost:27017/geo");
+    db_url = "mongodb://localhost:27017/geo",
+    LocationsService = require('./services/locations')(db_url);
 
 app.use(bodyParser.json());
 
@@ -30,58 +20,32 @@ app.post('/locations', function(req, res) {
         tags: req.body.tags,
         position: [req.body.position.lng, req.body.position.lat]
     };
-    var location = new Location(location_info);
 
-    location.save(function(err, location, numberAffected){
+    LocationsService.createLocation(location_info, function(err, location, numberAffected) {
         if (err) {
             res.status(500).send('Could not add location.');
-        }
-        else {
+        } else {
             res.json(location);
         }
     });
 });
 
 app.get('/locations', function(req, res) {
-    var query = url.parse(req.url, true).query;
+    var query = url.parse(req.url, true).query,
+        range = parseInt(query.range, 10) * 1000,
+        point = [parseFloat(query.lng), parseFloat(query.lat)],
+        tags = query.tags ? query.tags.split(',') : [];
 
-    console.log(query);
-    var meters = parseInt(query.range, 10) * 1000;
-    console.log(meters);
-    var where = {
-        "position": {
-            $nearSphere: {
-                 $geometry: {
-                    type : "Point",
-                    coordinates : [ parseFloat(query.lng), parseFloat(query.lat) ]
-                 },
-                 $maxDistance: meters
-              }
-        }
-    };
-
-    if (query.tags) {
-        where["tags"] = { $in: query.tags.split(',')};
-    }
-
-    Location.find(where, function(err, locations){
-        console.log(locations);
+    LocationsService.findLocations(range, point, tags, function(err, locations) {
         if (err) {
-            res.status(500).send(err.name);
-        }
-        else {
-            var points = locations.map(function(location){
-                console.log(location);
-                return {
-                    "name": location.name,
-                    "coordinates": location.position
-                };
+            res.status(500).send('Could not load locations');
+        } else {
+            var points = locations.map(function(location) {
+                return location.toPoint();
             });
             res.json(points);
         }
     });
-
-    // return name, coordiantes[0,1]
 });
 
 var server = app.listen(1337, function() {
