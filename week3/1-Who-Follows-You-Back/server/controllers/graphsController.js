@@ -1,6 +1,5 @@
-var GithubGraphSource = require('../graph/sources/api'),
-    DatabaseGraphSource = require('../graph/sources/database'),
-    Graph = require('../graph/models/Graph');
+var GithubGraphSource = require('../graph-source-api'),
+    DatabaseGraphSource = require('../graph-source-mongodb');
 
 function createGraphFor(req, res) {
     var username = req.body.username,
@@ -10,8 +9,7 @@ function createGraphFor(req, res) {
         DatabaseGraphSource.saveGraph(graph, depth, function(err, id) {
             if (err) {
                 res.send('Could not save graph: ' + err);
-            }
-            else {
+            } else {
                 res.send(id);
             }
         });
@@ -23,8 +21,7 @@ function getGraph(req, res) {
     DatabaseGraphSource.loadGraph(graphId, function(err, graph) {
         if (err) {
             res.send('Graph does not exist');
-        }
-        else {
+        } else {
             res.send(graph.toString());
         }
     });
@@ -37,8 +34,7 @@ function getFollowingStatus(req, res) {
     DatabaseGraphSource.loadGraph(graphId, function(err, graph) {
         if (err) {
             res.send('Graph does not exist');
-        }
-        else {
+        } else {
 
             var first = graph.pathBetween(graph.getStart(), username),
                 second = graph.pathBetween(username, graph.getStart()),
@@ -47,14 +43,11 @@ function getFollowingStatus(req, res) {
 
             if (mutual) {
                 response = 'mutual';
-            }
-            else if (first) {
+            } else if (first) {
                 response = 'first';
-            }
-            else if (second) {
+            } else if (second) {
                 response = 'second';
-            }
-            else {
+            } else {
                 response = 'none';
             }
 
@@ -63,7 +56,7 @@ function getFollowingStatus(req, res) {
             });
         }
     });
-    
+
 }
 
 module.exports = {

@@ -9,11 +9,6 @@
   "author": "Stefan Kovachev",
   "license": "MIT",
   "dependencies": {
-    "async": "^0.9.0",
-    "chai": "^1.9.2",
-    "mongoose": "^3.8.18",
-    "request": "^2.47.0",
-    "sprintf": "^0.1.4",
-    "underscore": "^1.7.0"
+    "chai": "^1.9.2"
   }
 }

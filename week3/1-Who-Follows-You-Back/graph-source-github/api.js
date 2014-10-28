@@ -15,13 +15,13 @@ function parseUserFollowingResponse(response) {
         return [];
     }
 
-    return json.map(function(user){
+    return json.map(function(user) {
         return user.login;
     });
 }
 
-function getUserFollowing (username, done) {
-    console.log('Get following for user: '+username);
+function getUserFollowing(username, done) {
+    console.log('Get following for user: ' + username);
 
     var url = sprintf(following_url, username);
     request({
@@ -49,21 +49,20 @@ function getUsersFollowing(users, currentDepth, callback) {
         var callbacks = [],
             usersQueue = [];
 
-        users.forEach(function(username){
-            callbacks.push(function(async_callback){
-                getUserFollowing(username, function(following){
+        users.forEach(function(username) {
+            callbacks.push(function(async_callback) {
+                getUserFollowing(username, function(following) {
                     async_callback(null, following);
                 });
             });
         });
 
-        async.series(callbacks, function(err, results){
+        async.series(callbacks, function(err, results) {
             users = _.unique(_.flatten(results));
             console.log('Completed api calls for depth: ' + currentDepth);
-            getUsersFollowing(users, currentDepth+1, callback);
+            getUsersFollowing(users, currentDepth + 1, callback);
         });
-    }
-    else {
+    } else {
         // done
         callback();
     }
@@ -73,8 +72,8 @@ module.exports = {
     // load graph from api via username and depth
     loadGraph: function(username, depth, done) {
         maxDepth = depth;
-        getUserFollowing(username, function(following){
-            getUsersFollowing(following, 1, function(){
+        getUserFollowing(username, function(following) {
+            getUsersFollowing(following, 1, function() {
                 var graphStructure = {
                     edges: nodes,
                     startNode: username

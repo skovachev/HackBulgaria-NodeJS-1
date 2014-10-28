@@ -12,7 +12,7 @@ describe('DirectedGraph', function() {
         },
         graph = null;
 
-    JSONGraphSource.loadGraph(structure, function(g){
+    JSONGraphSource.loadGraph(structure, function(g) {
         graph = g;
     });
 

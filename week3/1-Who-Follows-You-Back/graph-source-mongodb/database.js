@@ -1,18 +1,22 @@
 var DirectedGraph = require('../graph'),
-    GraphModel = require('../models/Graph'),
-    GraphNodeModel = require('../models/Node');
+    GraphModel = require('./models/Graph'),
+    GraphNodeModel = require('./models/Node');
 
 module.exports = {
-    
+
     loadGraph: function(graphId, done) {
         // load graph from database via id
-        GraphModel.findOne({_id: graphId}, function(err, graph) {
+        GraphModel.findOne({
+            _id: graphId
+        }, function(err, graph) {
             if (err) {
                 done(err, null);
             } else {
                 // TODO: load graph nodes recursive based on depth
                 // graph.depth
-                GraphNodeModel.find({node: graph.start}, function(err, nodes) {
+                GraphNodeModel.find({
+                    node: graph.start
+                }, function(err, nodes) {
                     if (err) {
                         done(err, null);
                     } else {
@@ -20,7 +24,7 @@ module.exports = {
                             edges: {},
                             startNode: graph.start
                         };
-                        nodes.forEach(function(node){
+                        nodes.forEach(function(node) {
                             structure.edges[node.node] = node.neighbours;
                         });
                         done(null, new DirectedGraph(structure));
@@ -38,13 +42,12 @@ module.exports = {
         GraphModel.save(graph_data, function(err, g) {
             if (err) {
                 done(err, null);
-            }
-            else {
+            } else {
                 // save nodes
                 var edges = graph.getEdges(),
                     insertable_nodes = [];
 
-                Object.keys(edges).forEach(function(key){
+                Object.keys(edges).forEach(function(key) {
                     insertable_nodes.push({
                         node: key,
                         neighbours: edges[key]

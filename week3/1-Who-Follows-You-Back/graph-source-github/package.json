@@ -1,0 +1,17 @@
+{
+  "name": "graph-source-github",
+  "version": "0.0.0",
+  "description": "Github graph source",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stefan Kovachev",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^0.9.0",
+    "request": "^2.47.0",
+    "sprintf": "^0.1.4",
+    "underscore": "^1.7.0"
+  }
+}
