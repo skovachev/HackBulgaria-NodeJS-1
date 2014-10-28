@@ -7,9 +7,14 @@ function createGraphFor(req, res) {
         depth = req.body.depth;
 
     GithubGraphSource.loadGraph(username, parseInt(depth, 10), function(graph) {
-        // TODO save graph to db
-        console.log(graph.toString());
-        res.json(id);
+        DatabaseGraphSource.saveGraph(graph, function(err, id) {
+            if (err) {
+                res.send('Could not save graph: ' + err);
+            }
+            else {
+                res.send(id);
+            }
+        });
     });
 }
 
@@ -34,7 +39,28 @@ function getFollowingStatus(req, res) {
             res.send('Graph does not exist');
         }
         else {
-            // graph.pathBetween(username)
+
+            var first = graph.pathBetween(graph.getStart(), username),
+                second = graph.pathBetween(username, graph.getStart()),
+                mutual = first() && second,
+                response = null;
+
+            if (mutual) {
+                response = 'mutual';
+            }
+            else if (first) {
+                response = 'first';
+            }
+            else if (second) {
+                response = 'second';
+            }
+            else {
+                response = 'none';
+            }
+
+            res.json({
+                relation: response
+            });
         }
     });
     

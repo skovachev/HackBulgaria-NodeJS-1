@@ -1,6 +1,6 @@
 var DirectedGraph = require('../graph'),
     GraphModel = require('../models/Graph'),
-    GraphNodeModel = require('../models/Node'),
+    GraphNodeModel = require('../models/Node');
 
 module.exports = {
     
@@ -14,9 +14,12 @@ module.exports = {
                     if (err) {
                         done(err, null);
                     } else {
-                        var structure = {};
+                        var structure = {
+                            edges: {},
+                            startNode: graph.start
+                        };
                         nodes.forEach(function(node){
-                            structure[node.node] = node.neighbours;
+                            structure.edges[node.node] = node.neighbours;
                         });
                         done(null, new DirectedGraph(structure));
                     }

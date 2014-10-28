@@ -75,7 +75,11 @@ module.exports = {
         maxDepth = depth;
         getUserFollowing(username, function(following){
             getUsersFollowing(following, 1, function(){
-                done(new DirectedGraph(nodes));
+                var graphStructure = {
+                    edges: nodes,
+                    startNode: username
+                };
+                done(new DirectedGraph(graphStructure));
             });
         });
     }

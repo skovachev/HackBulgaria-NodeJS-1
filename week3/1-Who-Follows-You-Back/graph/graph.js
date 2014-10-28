@@ -1,11 +1,17 @@
-var edges = {};
+var edges = {},
+    startNode = null;
 
 function DirectedGraph(structure) {
-    edges = structure;
+    edges = structure.edges;
+    startNode = structure.startNode;
 }
 
 DirectedGraph.prototype.getNeighborsFor = function(node) {
     return edges[node] || [];
+};
+
+DirectedGraph.prototype.getStart = function() {
+    return startNode;
 };
 
 DirectedGraph.prototype.pathBetween = function(nodeA, nodeB) {

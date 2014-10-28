@@ -4,9 +4,12 @@ var expect = require("chai").expect,
 describe('DirectedGraph', function() {
 
     var structure = {
-            'testA': ['testB', 'testC'],
-            'testC': ['testB', 'testD']
-        }
+            edges: {
+                'testA': ['testB', 'testC'],
+                'testC': ['testB', 'testD']
+            },
+            startNode: 'testA'
+        },
         graph = null;
 
     JSONGraphSource.loadGraph(structure, function(g){
