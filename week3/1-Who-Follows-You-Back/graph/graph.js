@@ -1,43 +1,31 @@
-var edges = [];
+var edges = {};
 
-function DirectedGraph() {
-
+function DirectedGraph(structure) {
+    edges = structure;
 }
 
-DirectedGraph.prototype.loadFromApi = function(username, depth, done) {
-
-};
-
-DirectedGraph.prototype.loadFromDatabase = function(graphId, done) {
-
-};
-
-DirectedGraph.prototype.loadFromStructure = function(structure) {
-    edges = structure;
-    return this;
-};
-
 DirectedGraph.prototype.getNeighborsFor = function(node) {
-    var neighbours = [];
-    edges.forEach(function(edge){
-        if (edge.from === node) {
-            neighbours.push(edge.to);
-        }
-    });
-    return neighbours;
+    return edges[node] || [];
 };
 
 DirectedGraph.prototype.pathBetween = function(nodeA, nodeB) {
-    var numberEdges = edges.length,
-        edge = null;
+    var neighbours = this.getNeighborsFor(nodeA);
+    if (neighbours.length === 0) {
+        return false;
+    }
 
-    for (var i = 0; i < numberEdges; i++) {
-        edge = edges[i];
-        if (edge.from === nodeA && edge.to === nodeB) {
+    if (neighbours.indexOf(nodeB) > -1) {
+        return true;
+    }
+
+    do {
+        var neighbour = neighbours.shift();
+        var pathFound = this.pathBetween(neighbour, nodeB);
+        if (pathFound) {
             return true;
         }
-    }
-    
+    } while (neighbours.length > 0);
+
     return false;
 };
 
