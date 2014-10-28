@@ -4,10 +4,10 @@ var GithubGraphSource = require('../graph/sources/api'),
 
 function createGraphFor(req, res) {
     var username = req.body.username,
-        depth = req.body.depth;
+        depth = parseInt(req.body.depth, 10);
 
-    GithubGraphSource.loadGraph(username, parseInt(depth, 10), function(graph) {
-        DatabaseGraphSource.saveGraph(graph, function(err, id) {
+    GithubGraphSource.loadGraph(username, depth, function(graph) {
+        DatabaseGraphSource.saveGraph(graph, depth, function(err, id) {
             if (err) {
                 res.send('Could not save graph: ' + err);
             }

@@ -6,12 +6,16 @@ function DirectedGraph(structure) {
     startNode = structure.startNode;
 }
 
-DirectedGraph.prototype.getNeighborsFor = function(node) {
-    return edges[node] || [];
-};
-
 DirectedGraph.prototype.getStart = function() {
     return startNode;
+};
+
+DirectedGraph.prototype.getEdges = function() {
+    return edges;
+};
+
+DirectedGraph.prototype.getNeighborsFor = function(node) {
+    return edges[node] || [];
 };
 
 DirectedGraph.prototype.pathBetween = function(nodeA, nodeB) {

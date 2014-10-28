@@ -10,6 +10,8 @@ module.exports = {
             if (err) {
                 done(err, null);
             } else {
+                // TODO: load graph nodes recursive based on depth
+                // graph.depth
                 GraphNodeModel.find({node: graph.start}, function(err, nodes) {
                     if (err) {
                         done(err, null);
@@ -28,7 +30,31 @@ module.exports = {
         });
     },
 
-    saveGraph: function(graph, done) {
+    saveGraph: function(graph, depth, done) {
+        var graph_data = {
+            start: graph.getStart(),
+            depth: depth
+        };
+        GraphModel.save(graph_data, function(err, g) {
+            if (err) {
+                done(err, null);
+            }
+            else {
+                // save nodes
+                var edges = graph.getEdges(),
+                    insertable_nodes = [];
 
+                Object.keys(edges).forEach(function(key){
+                    insertable_nodes.push({
+                        node: key,
+                        neighbours: edges[key]
+                    });
+                });
+
+                GraphNodeModel.collection.insert(insertable_nodes, {}, function(err, nodes) {
+                    done(err, g._id);
+                });
+            }
+        });
     }
 };
