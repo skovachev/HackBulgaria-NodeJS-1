@@ -8,5 +8,9 @@
     "start": "node server.js"
   },
   "author": "Stefan Kovachev",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.9.2",
+    "express": "^4.10.0"
+  }
 }
