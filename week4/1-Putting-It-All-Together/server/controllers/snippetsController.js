@@ -17,8 +17,7 @@ function detectLanguage(ext, done) {
     });
     if (found) {
         done(null, found);
-    }
-    else {
+    } else {
         done('Could not detect language');
     }
 }
@@ -26,16 +25,15 @@ function detectLanguage(ext, done) {
 function parseData(data, done) {
     if (typeof data['language'] !== 'undefined') {
         done(data);
-    }
-    else {
-        detectLanguage(path.extname(data['filename']), function (err, language) {
+    } else {
+        detectLanguage(path.extname(data['filename']), function(err, language) {
             if (!err && language) {
                 data['language'] = language;
             }
             done(data);
         });
     }
-    
+
 }
 
 function formatResponse(response) {
