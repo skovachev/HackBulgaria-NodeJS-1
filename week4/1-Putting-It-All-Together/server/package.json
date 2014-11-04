@@ -15,6 +15,7 @@
     "language-map": "^1.0.0",
     "mongoose": "^3.8.18",
     "request": "^2.47.0",
+    "supertest": "^0.14.0",
     "underscore": "^1.7.0"
   }
 }

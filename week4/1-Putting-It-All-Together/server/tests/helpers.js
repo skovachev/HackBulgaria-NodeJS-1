@@ -1,65 +1,69 @@
-var request = require('request');
+var request = require('supertest'),
+    app = null;
 
 function create(item, done) {
-    request.post({
-        url: requestUrl('/create-snippet'),
-        body: JSON.stringify(item),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        json: true
-    }, done);
+    return request(app)
+        .post('/create-snippet')
+        .send(item)
+        .set('Accept', 'application/json')
+        .end(function(err, res){
+            if (err) return done(err);
+            done();
+        });
+}
+
+function errorHandler(err, res, done){
+    if (err) throw err;
+    if (done) {
+        done();
+    }
 }
 
 function readAll(done) {
-    var path = '/list';
-    request.get({
-        url: requestUrl(path),
-        json: true
-    }, done);
+    return request(app)
+        .get('/list')
+        .set('Accept', 'application/json')
+        .end(function(err, res){
+            errorHandler(err, res, done);
+        });
 }
 
 function readByCreator(username, done) {
-    var path = '/list-by-creator';
-    path += "/" + username;
-    request.get({
-        url: requestUrl(path),
-        json: true
-    }, done);
+    return request(app)
+        .get('/list-by-creator/' + username)
+        .set('Accept', 'application/json')
+        .end(function(err, res){
+            errorHandler(err, res, done);
+        });
 }
 
 function readById(id, done) {
-    var path = '/list';
-    path += "/" + id;
-    request.get({
-        url: requestUrl(path),
-        json: true
-    }, done);
+    return request(app)
+        .get('/list/' + id)
+        .set('Accept', 'application/json')
+        .end(function(err, res){
+            errorHandler(err, res, done);
+        });
 }
 
 function update(id, item, done) {
-    var path = '/update-snippet/' + id;
-    request.put({
-        url: requestUrl(path),
-        body: JSON.stringify(item),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        json: true
-    }, done);
+    return request(app)
+        .put('/update-snippet/' + id)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json')
+        .send(item)
+        .end(function(err, res){
+            errorHandler(err, res, done);
+        });
 }
 
 function del(id, done) {
-    var path = '/delete-snippet';
-    path += "/" + id;
-    request.del({
-        url: requestUrl(path),
-        json: true
-    }, done);
-}
-
-function requestUrl(path) {
-    return 'http://localhost:1337' + path;
+    return request(app)
+        .delete('/delete-snippet/' + id)
+        .set('Accept', 'application/json')
+        .end(function(err, res){
+            errorHandler(err, res, done);
+        });
 }
 
 var generateItemCounter = 0;
@@ -74,13 +78,16 @@ function generateItem() {
     };
 }
 
-module.exports = {
-    generateItem: generateItem,
-    deleteItem: del,
-    createItem: create,
-    updateItem: update,
-    readAll: readAll,
-    readById: readById,
-    readByCreator: readByCreator,
-    requestUrl: requestUrl
+module.exports = function(expressApp) {
+    app = expressApp;
+
+    return {
+        generateItem: generateItem,
+        deleteItem: del,
+        createItem: create,
+        updateItem: update,
+        readAll: readAll,
+        readById: readById,
+        readByCreator: readByCreator,
+    };
 };

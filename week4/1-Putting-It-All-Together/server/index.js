@@ -1,10 +1,4 @@
-var express = require('express'),
-    bodyParser = require('body-parser'),
-    app = express();
-
-app.use(bodyParser.json());
-
-require('./config/routes')(app);
+var app = require('./app');
 
 var server = app.listen(1337, function() {
 
