@@ -74,7 +74,6 @@ describe('', function() {
                         expect(body, 'body should contain a property "snippet"').to.have.property('snippet');
                         expect(createdItem, 'Result should contain the _id of the created snippet').to.have.property('_id');
                         expect(createdItem, 'Result should be the created snippet with an added property "_id"').to.deep.equal(item);
-                        console.log('test')
                     });
             });
 
