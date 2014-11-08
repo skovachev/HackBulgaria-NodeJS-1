@@ -1,10 +1,9 @@
-var Contact = require('../models/Contact'),
-    _ = require('underscore'),
-    path = require('path'),
+var _ = require('underscore'),
     fields = ['personIdentifier', 'phoneNumber', '_id'],
     fillableFields = _.without(fields, '_id'),
     responseKey = 'contact',
-    responseFormatter = require('../services/responseFormatter')(fields, responseKey);
+    responseFormatter = require('../services/responseFormatter')(fields, responseKey),
+    contactsService = require('../services/contactsService');
 
 function sendError(res, errorText, errorCode) {
     errorCode = errorCode || 500;
@@ -18,9 +17,7 @@ function sendResponse(res, data, responseCode) {
 
 function createContact(req, res) {
     var contactData = _.pick(req.body, fillableFields);
-    var contact = new Contact(contactData);
-
-    contact.save(function(err, contact, numberAffected) {
+    contactsService.createContact(contactData, function(err, contact) {
         if (err) {
             sendError(res, 'Could not save contact');
         } else {
@@ -33,9 +30,7 @@ function updateContact(req, res) {
     var id = req.param("id"),
         contactData = _.pick(req.body, fillableFields);
 
-    Contact.findOneAndUpdate({
-        _id: id
-    }, contactData, function(err, contact) {
+    contactsService.updateContact(id, contactData, function(err, contact) {
         if (err || contact === null) {
             sendError(res, 'Could not save contact', 404);
         } else {
@@ -46,7 +41,7 @@ function updateContact(req, res) {
 
 function deleteContact(req, res) {
     var id = req.param("id");
-    Contact.findByIdAndRemove(id, function(err, contact) {
+    contactsService.deleteContact(id, function(err, contact) {
         if (err) {
             sendError(res, 'Could not find contact', 404);
         } else {
@@ -56,7 +51,7 @@ function deleteContact(req, res) {
 }
 
 function listAllContacts(req, res) {
-    Contact.find({}, function(err, contacts) {
+    contactsService.listAllContacts(function(err, contacts) {
         if (err) {
             sendError(res, 'Could not list all contacts');
         } else {
@@ -67,9 +62,7 @@ function listAllContacts(req, res) {
 
 function showContact(req, res) {
     var id = req.param("id");
-    Contact.findOne({
-        _id: id
-    }, function(err, contact) {
+    contactsService.findContact(id, function(err, contact) {
         if (err) {
             sendError(res, 'Could not find contact', 404);
         } else {

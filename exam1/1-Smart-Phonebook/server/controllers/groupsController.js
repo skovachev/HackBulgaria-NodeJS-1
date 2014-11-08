@@ -1,4 +1,4 @@
-var ContactGroup = require('../models/ContactGroup'),
+var groupsService = require('../services/groupsService'),
     responseFormatter = require('../services/responseFormatter')(['groupName', 'type', 'contacts', '_id'], 'group');
 
 function sendError(res, errorText, errorCode) {
@@ -12,7 +12,7 @@ function sendResponse(res, data, responseCode) {
 }
 
 function listAllGroups(req, res) {
-    ContactGroup.find({}, function(err, groups) {
+    groupsService.listAllGroups(function(err, groups) {
         if (err) {
             sendError(res, 'Could not list all groups');
         } else {
