@@ -10,6 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "chai": "^1.10.0",
-    "q": "^1.1.1"
+    "debug": "^2.1.0",
+    "q": "^1.1.1",
+    "underscore": "^1.7.0"
   }
 }

@@ -1,33 +1,42 @@
-var Format = require('./format');
+var Format = require('./format'),
+    Q = require('q');
 
 function RGBFormat() {
 
 }
 
+function callPrototypeMethodForRGB(bind, method, imageData, deferred, kernel) {
+    Format.prototype[method].call(bind, imageData.red, kernel).done(function(red) {
+        Format.prototype[method].call(bind, imageData.green, kernel).done(function(green) {
+            Format.prototype[method].call(bind, imageData.blue, kernel).done(function(blue) {
+                deferred.resolve({
+                    red: red,
+                    green: green,
+                    blue: blue
+                });
+            });
+        });
+    });
+}
+
 RGBFormat.prototype = new Format();
 
 RGBFormat.prototype.applyKernel = function(imageData, kernel) {
-    return {
-        red: Format.applyKernel.call(this, imageData.red),
-        green: Format.applyKernel.call(this, imageData.green),
-        blue: Format.applyKernel.call(this, imageData.blue)
-    };
+    var deferred = Q.defer();
+    callPrototypeMethodForRGB(this, 'applyKernel', imageData, deferred, kernel);
+    return deferred.promise;
 };
 
 RGBFormat.prototype.edgeDetection = function(imageData) {
-    return {
-        red: Format.edgeDetection.call(this, imageData.red),
-        green: Format.edgeDetection.call(this, imageData.green),
-        blue: Format.edgeDetection.call(this, imageData.blue)
-    };
+    var deferred = Q.defer();
+    callPrototypeMethodForRGB(this, 'edgeDetection', imageData, deferred);
+    return deferred.promise;
 };
 
 RGBFormat.prototype.boxBlur = function(imageData) {
-    return {
-        red: Format.boxBlur.call(this, imageData.red),
-        green: Format.boxBlur.call(this, imageData.green),
-        blue: Format.boxBlur.call(this, imageData.blue)
-    };
+    var deferred = Q.defer();
+    callPrototypeMethodForRGB(this, 'boxBlur', imageData, deferred);
+    return deferred.promise;
 };
 
 module.exports = RGBFormat;

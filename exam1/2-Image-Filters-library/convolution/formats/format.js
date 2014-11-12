@@ -1,47 +1,77 @@
-var Q = require('q');
+var Q = require('q'),
+    _ = require('underscore'),
+    debug = require('debug')('Format');
 
 function Format() {
-    
+
 }
 
-function convulatePixel(position, imageData, kernel) {
-    // TODO do calcaulation -> http://www.songho.ca/dsp/convolution/convolution2d_example.html 
-    // TODO make sure it works for any kernel size / get its center
-    kernel.forEach(function(kernelRow, kernelRowIndex){
-        kernelRow.forEach(function(kernelRowElement, kernelRowElementIndex){
+// some additional info about the algorithm:
+// https://en.wikipedia.org/wiki/Kernel_%28image_processing%29
+// http://www.songho.ca/dsp/convolution/convolution2d_example.html
 
-            process.nextTick(function(){
-                deferred.resolve(result);
-                // calculate here
-                // https://en.wikipedia.org/wiki/Kernel_%28image_processing%29
-                // http://www.songho.ca/dsp/convolution/convolution2d_example.html example
-            });
+function calculatePixel(position, imageData, kernel) {
+    var sideOffset = (kernel.length - 1) / 2,
+        sum = 0;
 
+    debug('\nCalculating value for pixel...');
+
+    kernel.forEach(function(row, kernelRowIndex) {
+        kernel[kernelRowIndex].forEach(function(kernelValue, kernelElementIndex) {
+            var imageDataElementIndex = kernelElementIndex - sideOffset + position[1],
+                imageDataRowIndex = kernelRowIndex - sideOffset + position[0],
+                imageDataValue = 0;
+
+            var imageDataRowIndexInBounds = imageDataRowIndex >= 0 && imageDataRowIndex < imageData.length,
+                imageDateElementIndexInBounds = imageDataElementIndex >= 0 && imageDataElementIndex < imageData[0].length;
+
+            if (imageDateElementIndexInBounds && imageDataRowIndexInBounds) {
+                imageDataValue = imageData[imageDataRowIndex][imageDataElementIndex];
+            }
+
+            debug(kernelValue, '*', imageDataValue, 'kernel[' + kernelRowIndex + '][' + kernelElementIndex + ']', 'imageData[' + imageDataRowIndex + '][' + imageDataElementIndex + ']');
+
+            sum += imageDataValue * kernelValue;
         });
+        debug('-');
     });
+
+    debug(sum);
+    debug('--------');
+
+    return sum;
 }
 
-function convulateNextPixel(lastPixelPosition, imageData, kernel, result, deferred) {
-    var completed; // TODO: check of lastPixelPosition is out of bounds already -> resolve if yes
+function calculateNextPixel(lastPixelPosition, imageData, kernel, result, deferred) {
+    // check of lastPixelPosition is the last pixel position -> resolve if yes
+    var completed = lastPixelPosition[0] === imageData.length - 1 && lastPixelPosition[1] === imageData[0].length - 1;
     if (completed) {
         deferred.resolve(result);
-    }
-    else {
-        process.nextTick(function(){
+    } else {
+        process.nextTick(function() {
             // TODO: calculate next position
-            var nextPosition;
+            var nextPosition = lastPixelPosition;
+            nextPosition[1] ++;
+
+            // must go to next row
+            if (nextPosition[1] === imageData[nextPosition[0]].length) {
+                nextPosition[1] = 0;
+                nextPosition[0] ++;
+            }
+
             // calculate
-            result[rowIndex][pixelInRowIndex] = convulatePixel(nextPosition, imageData, kernel);
+            result[nextPosition[0]][nextPosition[1]] = calculatePixel(nextPosition, imageData, kernel);
             // move to next
-            convulateNextPixel(nextPosition, imageData, kernel, result, deferred);
+            calculateNextPixel(nextPosition, imageData, kernel, result, deferred);
         });
     }
 }
 
 function createBlankResult(imageData) {
     var result = [];
-    imageData.forEach(function(row, rowIndex){
-        row.forEach(function(pixelInRow, pixelInRowIndex){
+    imageData.forEach(function(row, rowIndex) {
+        result[rowIndex] = [];
+        row.forEach(function(pixelInRow, pixelInRowIndex) {
             result[rowIndex][pixelInRowIndex] = 0;
         });
     });
@@ -52,7 +82,7 @@ Format.prototype.applyKernel = function(imageData, kernel) {
     var result = createBlankResult(imageData),
         deferred = Q.defer();
 
-    convulateNextPixel([0, 0], imageData, kernel, result, deferred);
+    calculateNextPixel([0, 0], imageData, kernel, result, deferred);
 
     return deferred.promise;
 };
