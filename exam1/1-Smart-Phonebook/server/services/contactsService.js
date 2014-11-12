@@ -2,7 +2,7 @@ var Contact = require('../models/Contact'),
     GroupsService = require('./groupsService');
 
 // TODO
-// attach async event emitter: https://www.npmjs.org/package/async-eventemitter
+// attach async event emitter: https://www.npmjs.org/package/async-eventemitter ??
 // instead of callbacks
 
 module.exports = {

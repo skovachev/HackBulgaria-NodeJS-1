@@ -22,7 +22,7 @@ var ContactGroupSchema = new Schema({
     contacts: {type: [String], required: true},
     type: String,
 }, {
-    collection: 'contacts'
+    collection: 'groups'
 });
 
 var ContactGroup = mongoose.model('ContactGroup', ContactGroupSchema);
