@@ -54,6 +54,5 @@ describe('Groups suite', function() {
                     });
             });
         });
-
     });
 });

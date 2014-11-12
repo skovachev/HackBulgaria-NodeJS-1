@@ -1,5 +1,6 @@
 var Contact = require('../models/Contact'),
-    GroupsService = require('./groupsService');
+    GroupsService = require('./groupsService'),
+    debug = require('debug')('ContactsService');
 
 // TODO
 // attach async event emitter: https://www.npmjs.org/package/async-eventemitter ??
@@ -51,9 +52,15 @@ module.exports = {
     deleteContact: function(id, done) {
         Contact.findByIdAndRemove(id, function(err, contact){
             if (!err) {
-                GroupsService.handleContactDeleted(contact, function(){
-                    done(err, contact);
-                });
+                debug('removed contact', contact);
+                if (contact) {
+                    GroupsService.handleContactDeleted(contact, function(){
+                        done(err, contact);
+                    });
+                }
+                else {
+                    done();
+                }
             }
             else {
                 done(err);

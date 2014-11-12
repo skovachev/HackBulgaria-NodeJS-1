@@ -47,8 +47,11 @@ function compareGroupName(nameA, nameB)
     return 0;
 }
 
-function findGroupsByToken(token)
-{
+function tokenMatchesGroupName(token, group) {
+    return token === group.groupName || _.indexOf(group.groupName, token) !== -1;
+}
+
+function findGroupsByToken(token) {
     return _.filter(groups, function(group){
         return token === group.groupName || _.indexOf(token, group.groupName) !== -1;
     });
@@ -90,10 +93,23 @@ function createGroup(token, contact_ids) {
     };
 }
 
-function addNewContact(contact) {
-    var tokens = contact.personIdentifier.split(/\s/).map(function(token){
+function tokenizeContactIdentifier(contact) {
+    return contact.personIdentifier.split(/\s/).map(function(token){
         return formatToken(token);
     });
+}
+
+function groupResponse(new_groups, removed_groups) {
+    new_groups = new_groups || [];
+    removed_groups = removed_groups || [];
+    return {
+        update: sortGroups(new_groups),
+        remove: sortGroups(removed_groups)
+    };
+}
+
+function addNewContact(contact) {
+    var tokens = tokenizeContactIdentifier(contact);
 
     var new_groups = [];
 
@@ -126,7 +142,40 @@ function addNewContact(contact) {
         });
     });
 
-    return sortGroups(new_groups);
+    return groupResponse(new_groups);
+}
+
+function removeContactFromGroup(group, contact) {
+    debug('removeContactFromGroup length before %d', group.contacts.length, group.contacts);
+    debug('removing contact by id ', contact._id);
+    group.contacts = _.without(group.contacts, contact._id+'');
+    debug('removeContactFromGroup length after %d', group.contacts.length, group.contacts);
+    if (group.contacts.length === 0) {
+        return null;
+    }
+    return group;
+}
+
+function removeContact(contact) {
+    var tokens = tokenizeContactIdentifier(contact);
+    var removed_groups = [],
+        new_groups = [];
+
+    groups.forEach(function(group){
+        tokens.forEach(function(token){
+            if (tokenMatchesGroupName(token, group)) {
+                var updated_group = removeContactFromGroup(group, contact);
+                if (!updated_group) {
+                    removed_groups.push(group);
+                }
+                else {
+                    new_groups.push(group);
+                }
+            }
+        });
+    });
+
+    return groupResponse(new_groups, removed_groups);
 }
 
 module.exports = function(g) {
@@ -134,7 +183,8 @@ module.exports = function(g) {
 
     return {
         addNewContact: addNewContact,
-        compareGroupName: compareGroupName
+        compareGroupName: compareGroupName,
+        removeContact: removeContact
     };
 };
     
