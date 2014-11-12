@@ -108,9 +108,7 @@ function groupResponse(new_groups, removed_groups) {
     };
 }
 
-function addNewContact(contact) {
-    var tokens = tokenizeContactIdentifier(contact);
-
+function updateByTokens(tokens, contact) {
     var new_groups = [];
 
     var group_tokens = _(groups).chain().map(function(group) {
@@ -135,7 +133,7 @@ function addNewContact(contact) {
     group_tokens.forEach(function(group_token){
         tokens.forEach(function(token){
             var l = new Levenshtein(group_token, token);
-            debug('levenshtein for %s, %s: %i', group_token, token, l.distance);
+            debug('levenshtein for %s, %s: %d', group_token, token, l.distance);
             if (l.distance <= 2 && l.distance > 0) {
                 new_groups.push(createFuzzyGroup(group_token, token, contact._id));
             }
@@ -143,6 +141,11 @@ function addNewContact(contact) {
     });
 
     return groupResponse(new_groups);
+}
+
+function addNewContact(contact) {
+    var tokens = tokenizeContactIdentifier(contact);
+    return updateByTokens(tokens, contact);
 }
 
 function removeContactFromGroup(group, contact) {
@@ -156,8 +159,7 @@ function removeContactFromGroup(group, contact) {
     return group;
 }
 
-function removeContact(contact) {
-    var tokens = tokenizeContactIdentifier(contact);
+function removeByTokens(tokens, contact) {
     var removed_groups = [],
         new_groups = [];
 
@@ -178,13 +180,44 @@ function removeContact(contact) {
     return groupResponse(new_groups, removed_groups);
 }
 
+function removeContact(contact) {
+    var tokens = tokenizeContactIdentifier(contact);
+    return removeByTokens(tokens, contact);
+}
+
+function updateContact(before, after) {
+    var before_tokens = tokenizeContactIdentifier(before);
+    var after_tokens = tokenizeContactIdentifier(after);
+
+    var removed_tokens = _.difference(before_tokens, after_tokens);
+    var removed_response = removeByTokens(removed_tokens, before);
+
+    // remove outdated groups from cached groups array
+    var removed_group_tokens = removed_response.remove.map(function(group){
+        return group.groupName;
+    });
+    groups = _.filter(groups, function(group){
+        var removed = false;
+        removed_group_tokens.forEach(function(removed_token){
+            removed = removed || compareGroupName(removed_token, group.groupName) === 0;
+        });
+        return !removed;
+    });
+
+    var new_tokens = _.difference(after_tokens, before_tokens);
+    var updates_response = updateByTokens(new_tokens, after);
+
+    return groupResponse(updates_response.update.concat(removed_response.update), removed_response.remove);
+}
+
 module.exports = function(g) {
     groups = g;
 
     return {
         addNewContact: addNewContact,
         compareGroupName: compareGroupName,
-        removeContact: removeContact
+        removeContact: removeContact,
+        updateContact: updateContact
     };
 };
     

@@ -80,6 +80,9 @@ module.exports = {
 
     handleContactUpdated: function(before, after, done) {
         // update groups based on changes in contact name
+        determineNewGroups(done, function(builder){
+            return builder.updateContact(before, after);
+        });
         done();
     },
 

@@ -145,4 +145,58 @@ describe('GroupBuilder', function() {
         });
 
     });
+
+    describe('updateContact', function() {
+    
+        it('should create new groups when contact updated', function(done) {
+            var groups = [{
+                'groupName': 'Stefan',
+                'contacts': [
+                    'contactId', 'testContact'
+                ]
+            }, {
+                'groupName': 'Mldost',
+                'contacts': [
+                    'contactId'
+                ]
+            }, {
+                'groupName': 'Kovachev',
+                'contacts': [
+                    'contactId', 'testContact'
+                ]
+            }];
+            var builder = new GroupBuilder(groups);
+            var before = {
+                'personIdentifier': 'Stefan Kovachev mldost',
+                'phoneNumber': '1341251253',
+                '_id': 'contactId'
+            };
+
+            var after = {
+                'personIdentifier': 'Stefan Mladost',
+                'phoneNumber': '1341251253',
+                '_id': 'contactId'
+            };
+
+            // should remove group mldost
+            // should create group mladost
+            // should remove id from Kovachev group
+
+            var resultGroups = builder.updateContact(before, after);
+
+            console.log(resultGroups.update);
+
+            expect(resultGroups.update.length, 'result update groups array length').to.equal(2);
+            expect(resultGroups.update[0].groupName, 'updated group 1 name').to.equal('Kovachev');
+            expect(resultGroups.update[0].contacts, 'updated group 1 contacts').to.deep.equal(['testContact']);
+            expect(resultGroups.update[1].groupName, 'added group 1 name').to.equal('Mladost');
+            expect(resultGroups.update[1].contacts, 'added group 1 contacts').to.deep.equal(['contactId']);
+
+            expect(resultGroups.remove.length, 'result update groups array length').to.equal(1);
+            expect(resultGroups.remove[0].groupName, 'removed group 1 name').to.equal('Mldost');
+
+            done();
+        });
+
+    });
 });
