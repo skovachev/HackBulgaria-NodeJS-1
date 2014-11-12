@@ -13,7 +13,7 @@ var contacts = [];
 function resetDatabase(done) {
     Contact.remove({}, function(err) {
         expect(err).to.not.exist;
-        contacts = [0, 1].map(function(){
+        contacts = [0, 1].map(function() {
             var contact = generator.generateContact();
             contact['_id'] = mongoose.Types.ObjectId() + '';
             return contact;

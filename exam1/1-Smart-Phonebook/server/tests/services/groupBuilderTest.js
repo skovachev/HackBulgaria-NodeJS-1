@@ -17,7 +17,7 @@ describe('GroupBuilder', function() {
     });
 
     describe('addNewContact', function() {
-    
+
         it('should create new groups from contact name', function(done) {
             var groups = [{
                 'groupName': 'Stefan',
@@ -75,7 +75,7 @@ describe('GroupBuilder', function() {
     });
 
     describe('removeContact', function() {
-    
+
         it('should remove contact from groups', function(done) {
             var groups = [{
                 'groupName': 'Stefan',
@@ -147,7 +147,7 @@ describe('GroupBuilder', function() {
     });
 
     describe('updateContact', function() {
-    
+
         it('should create new groups when contact updated', function(done) {
             var groups = [{
                 'groupName': 'Stefan',

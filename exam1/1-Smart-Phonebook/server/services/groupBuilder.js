@@ -8,8 +8,7 @@ function formatToken(token) {
     return token.charAt(0).toUpperCase() + token.slice(1);
 }
 
-function compareGroupName(nameA, nameB)
-{
+function compareGroupName(nameA, nameB) {
     if (!_.isArray(nameA)) {
         nameA = [nameA];
     }
@@ -23,23 +22,19 @@ function compareGroupName(nameA, nameB)
         if (i >= nameA.length && i >= nameB.length) {
             // equal lengths and equal tokens => equal
             return 0;
-        }
-        else if (i >= nameA.length) {
+        } else if (i >= nameA.length) {
             // name A is shorter => sorted first
             return 1;
-        }
-        else if (i >= nameB.length) {
+        } else if (i >= nameB.length) {
             // name B is shorter => sorted first
             return -1;
         }
 
         if (nameA[i] === nameB[i]) {
             continue;
-        }
-        else if (nameA[i] > nameB[i]) {
+        } else if (nameA[i] > nameB[i]) {
             return -1;
-        }
-        else {
+        } else {
             return 1;
         }
     }
@@ -52,7 +47,7 @@ function tokenMatchesGroupName(token, group) {
 }
 
 function findGroupsByToken(token) {
-    return _.filter(groups, function(group){
+    return _.filter(groups, function(group) {
         return token === group.groupName || _.indexOf(token, group.groupName) !== -1;
     });
 }
@@ -75,14 +70,13 @@ function createNormalGroup(token, contact_ids) {
 }
 
 function createGroup(token, contact_ids) {
-    if (!_.isArray(contact_ids))
-    {
+    if (!_.isArray(contact_ids)) {
         contact_ids = [contact_ids];
     }
     var existingGroups = findGroupsByToken(token);
-    
+
     if (existingGroups.length > 0) {
-        existingGroups.forEach(function(existingGroup){
+        existingGroups.forEach(function(existingGroup) {
             contact_ids = contact_ids.concat(existingGroup.contacts);
         });
         contact_ids = _.uniq(contact_ids);
@@ -94,7 +88,7 @@ function createGroup(token, contact_ids) {
 }
 
 function tokenizeContactIdentifier(contact) {
-    return contact.personIdentifier.split(/\s/).map(function(token){
+    return contact.personIdentifier.split(/\s/).map(function(token) {
         return formatToken(token);
     });
 }
@@ -117,7 +111,7 @@ function updateByTokens(tokens, contact) {
 
     // add new groups for new tokens
     var new_tokens = _.difference(tokens, group_tokens);
-    new_tokens.forEach(function(token){
+    new_tokens.forEach(function(token) {
         new_groups.push(createNormalGroup(token, contact._id));
     });
 
@@ -125,13 +119,13 @@ function updateByTokens(tokens, contact) {
 
     // update existing groups
     var existing_tokens = _.difference(tokens, new_tokens);
-    existing_tokens.forEach(function(token){
+    existing_tokens.forEach(function(token) {
         new_groups.push(createNormalGroup(token, contact._id));
     });
 
     // create fuzzy groups
-    group_tokens.forEach(function(group_token){
-        tokens.forEach(function(token){
+    group_tokens.forEach(function(group_token) {
+        tokens.forEach(function(token) {
             var l = new Levenshtein(group_token, token);
             debug('levenshtein for %s, %s: %d', group_token, token, l.distance);
             if (l.distance <= 2 && l.distance > 0) {
@@ -151,7 +145,7 @@ function addNewContact(contact) {
 function removeContactFromGroup(group, contact) {
     debug('removeContactFromGroup length before %d', group.contacts.length, group.contacts);
     debug('removing contact by id ', contact._id);
-    group.contacts = _.without(group.contacts, contact._id+'');
+    group.contacts = _.without(group.contacts, contact._id + '');
     debug('removeContactFromGroup length after %d', group.contacts.length, group.contacts);
     if (group.contacts.length === 0) {
         return null;
@@ -163,14 +157,13 @@ function removeByTokens(tokens, contact) {
     var removed_groups = [],
         new_groups = [];
 
-    groups.forEach(function(group){
-        tokens.forEach(function(token){
+    groups.forEach(function(group) {
+        tokens.forEach(function(token) {
             if (tokenMatchesGroupName(token, group)) {
                 var updated_group = removeContactFromGroup(group, contact);
                 if (!updated_group) {
                     removed_groups.push(group);
-                }
-                else {
+                } else {
                     new_groups.push(group);
                 }
             }
@@ -193,12 +186,12 @@ function updateContact(before, after) {
     var removed_response = removeByTokens(removed_tokens, before);
 
     // remove outdated groups from cached groups array
-    var removed_group_tokens = removed_response.remove.map(function(group){
+    var removed_group_tokens = removed_response.remove.map(function(group) {
         return group.groupName;
     });
-    groups = _.filter(groups, function(group){
+    groups = _.filter(groups, function(group) {
         var removed = false;
-        removed_group_tokens.forEach(function(removed_token){
+        removed_group_tokens.forEach(function(removed_token) {
             removed = removed || compareGroupName(removed_token, group.groupName) === 0;
         });
         return !removed;
@@ -220,4 +213,3 @@ module.exports = function(g) {
         updateContact: updateContact
     };
 };
-    

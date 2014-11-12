@@ -11,10 +11,12 @@ var fields = ['field_valid'],
 describe('ResponseFormatter', function() {
 
     describe('formatItem', function() {
-    
+
         it('should be able to format array of items', function(done) {
             var formatted = responseFormatter.formatItem([item]);
-            expect(formatted).to.deep.equal([{field_valid: 'foo'}]);
+            expect(formatted).to.deep.equal([{
+                field_valid: 'foo'
+            }]);
             done();
         });
 
@@ -26,26 +28,32 @@ describe('ResponseFormatter', function() {
 
         it('should format item', function(done) {
             var formatted = responseFormatter.formatItem(item);
-            expect(formatted).to.deep.equal({field_valid: 'foo'});
+            expect(formatted).to.deep.equal({
+                field_valid: 'foo'
+            });
             done();
         });
     });
 
     describe('formatError', function() {
-    
+
         it('should return error message under correct key', function(done) {
             var response = responseFormatter.formatErrorResponse('message');
-            expect(response).to.deep.equal({error: 'message'});
+            expect(response).to.deep.equal({
+                error: 'message'
+            });
             done();
         });
     });
 
     describe('formatResponse', function() {
-    
+
         it('should return item under correct key', function(done) {
             var response = responseFormatter.formatResponse(item);
             var expected = {};
-            expected[responseKey] = {field_valid: 'foo'};
+            expected[responseKey] = {
+                field_valid: 'foo'
+            };
             expect(response).to.deep.equal(expected);
             done();
         });

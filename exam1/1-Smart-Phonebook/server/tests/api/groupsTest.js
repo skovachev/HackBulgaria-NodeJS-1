@@ -11,7 +11,7 @@ var groups = [];
 function resetDatabase(done) {
     ContactGroup.remove({}, function(err) {
         expect(err).to.not.exist;
-        groups = [0, 1].map(function(){
+        groups = [0, 1].map(function() {
             var group = generator.generateContactGroup();
             group['_id'] = mongoose.Types.ObjectId() + '';
             return group;

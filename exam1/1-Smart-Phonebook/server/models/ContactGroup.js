@@ -11,15 +11,21 @@ function capitalizeAndGet(val) {
     if (!val) return val;
     if (_.isArray(val)) {
         return _.map(val, formatGroupWord);
-    }
-    else {
+    } else {
         return formatGroupWord(val);
     }
 }
 
 var ContactGroupSchema = new Schema({
-    groupName: { type: Schema.Types.Mixed, required: true, get: capitalizeAndGet },
-    contacts: {type: [String], required: true},
+    groupName: {
+        type: Schema.Types.Mixed,
+        required: true,
+        get: capitalizeAndGet
+    },
+    contacts: {
+        type: [String],
+        required: true
+    },
     type: String,
 }, {
     collection: 'groups'

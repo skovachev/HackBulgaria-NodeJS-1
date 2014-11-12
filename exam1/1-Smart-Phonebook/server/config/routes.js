@@ -10,7 +10,7 @@ module.exports = function(app) {
     app.post('/contacts/create', ContactsController.createContact);
     app.delete('/contacts/delete/:id', ContactsController.deleteContact);
     app.put('/contacts/update/:id', ContactsController.updateContact);
-    
+
     // contact group related routes
     app.get('/groups/list', GroupsController.listAllGroups);
 

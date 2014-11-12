@@ -11,11 +11,9 @@ module.exports = function(item_fields, item_key) {
             return _.map(response, function(item) {
                 return _.pick(item, fields);
             });
-        }
-        else if (_.isString(response)) {
+        } else if (_.isString(response)) {
             return response;
-        }
-        else {
+        } else {
             return _.pick(response, fields);
         }
     }
@@ -37,4 +35,3 @@ module.exports = function(item_fields, item_key) {
         formatResponse: formatResponse
     };
 };
-
