@@ -1,0 +1,15 @@
+{
+  "name": "convolution",
+  "version": "0.0.1",
+  "description": "Convolution module for image processing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stefan Kovachev",
+  "license": "MIT",
+  "dependencies": {
+    "chai": "^1.10.0",
+    "q": "^1.1.1"
+  }
+}
