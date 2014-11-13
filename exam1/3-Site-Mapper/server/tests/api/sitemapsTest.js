@@ -58,6 +58,7 @@ describe('Sitemaps suite', function() {
 
             it('should not create an existing sitemap', function(done) {
                 var item = generator.generateSitemap();
+                item.url = 'http://www.test.com';
                 apiCalls.createItem(item)
                     .expect(201)
                     .expect(function(res) {

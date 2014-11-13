@@ -50,6 +50,7 @@ function parseLinksFromRawHtml(host, html, sitemap, done) {
         } else {
             var links = select(dom, 'a[href*=' + host + ']'),
                 parsed_urls = _(sitemap.sitemap).chain().pluck('url').uniq().value();
+            parsed_urls.push(sitemap.url);
 
             debug('Total links found within same hostname: %d', links.length);
 
@@ -97,6 +98,10 @@ function saveCrawledUrlToSitemap(sitemap, url, links, done) {
 }
 
 function crawlUrl(url, depth, sitemap, done) {
+    if (sitemap.sitemap.length >= 500) {
+        debug('Collected ~500 urls for sitemap - stopping crawl process...');
+        done();
+    }
     depth--;
     canParseAssertion(url, function() {
 
@@ -106,6 +111,8 @@ function crawlUrl(url, depth, sitemap, done) {
             // save links to sitemap
             saveCrawledUrlToSitemap(sitemap, url, links, function() {
                 if (depth > 0) {
+                    sitemap.sitemap = sitemap.sitemap.concat(links);
+
                     // start async crawl other links
                     var callbacks = links.map(function(linkUrl) {
                         return function(callback) {
