@@ -21,7 +21,9 @@ function createSitemap(req, res) {
         if (err) {
             sendError(res, 'Could not save sitemap');
         } else {
-            sendResponse(res, sitemap, 201);
+            sendResponse(res, {
+                _id: sitemap._id
+            }, 201);
         }
     });
 }

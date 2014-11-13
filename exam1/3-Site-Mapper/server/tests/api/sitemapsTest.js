@@ -53,10 +53,6 @@ describe('Sitemaps suite', function() {
                         expect(res.statusCode, 'Status code should be 201.').to.equal(201);
                         expect(body, 'body should contain a property "sitemap"').to.have.property('sitemap');
                         expect(createdItem, 'Result should contain the _id of the created sitemap').to.have.property('_id');
-                        expect(createdItem, 'result should have a sitemap field').to.have.property('sitemap');
-                        expect(createdItem, 'result should have a status field').to.have.property('status');
-                        expect(createdItem.status, 'result status should be set').to.equal('currently crawling');
-                        expect(createdItem.sitemap, 'result sitemap property should exist').to.deep.equal([]);
                     });
             });
 

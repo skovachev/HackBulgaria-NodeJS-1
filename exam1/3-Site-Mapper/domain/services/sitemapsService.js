@@ -10,12 +10,22 @@ module.exports = {
                 sitemap: []
             };
 
-        var sitemap = new Sitemap(item);
-        sitemap.save(function(err, sitemap) {
-            if (!err) {
-                done(err, sitemap);
-            } else {
+        Sitemap.findOne({url: url}, function(err, sitemap){
+            if (err) {
                 done(err);
+            }
+            else if (sitemap) {
+                done(err, sitemap);
+            }
+            else {
+                sitemap = new Sitemap(item);
+                sitemap.save(function(err, created_sitemap) {
+                    if (!err) {
+                        done(err, created_sitemap);
+                    } else {
+                        done(err);
+                    }
+                });
             }
         });
     },
