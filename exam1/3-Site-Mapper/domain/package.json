@@ -1,7 +1,7 @@
 {
-  "name": "server",
+  "name": "domain",
   "version": "0.0.1",
-  "description": "",
+  "description": "Domain module for the Site Mapper application",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,13 +9,7 @@
   "author": "Stefan Kovachev",
   "license": "MIT",
   "dependencies": {
-    "async": "^0.9.0",
-    "body-parser": "^1.9.2",
-    "chai": "^1.9.2",
     "debug": "^2.1.0",
-    "express": "^4.10.1",
-    "request": "^2.47.0",
-    "supertest": "^0.14.0",
-    "underscore": "^1.7.0"
+    "mongoose": "^3.8.19"
   }
 }

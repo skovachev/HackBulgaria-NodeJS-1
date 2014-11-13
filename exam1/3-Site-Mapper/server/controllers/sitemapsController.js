@@ -3,7 +3,7 @@ var _ = require('underscore'),
     fillableFields = ['url'],
     responseKey = 'sitemap',
     responseFormatter = require('../services/responseFormatter')(fields, responseKey),
-    sitemapsService = require('../../domain/services/sitemapsService');
+    SitemapsService = require('../../domain').SitemapsService;
 
 function sendError(res, errorText, errorCode) {
     errorCode = errorCode || 500;
@@ -17,7 +17,7 @@ function sendResponse(res, data, responseCode) {
 
 function createSitemap(req, res) {
     var sitemapData = _.pick(req.body, fillableFields);
-    sitemapsService.createSitemap(sitemapData, function(err, sitemap) {
+    SitemapsService.createSitemap(sitemapData, function(err, sitemap) {
         if (err) {
             sendError(res, 'Could not save sitemap');
         } else {
@@ -28,7 +28,7 @@ function createSitemap(req, res) {
 
 function showSitemap(req, res) {
     var id = req.param("id");
-    sitemapsService.findSitemap(id, function(err, sitemap) {
+    SitemapsService.findSitemap(id, function(err, sitemap) {
         if (err) {
             sendError(res, 'Could not find sitemap', 404);
         } else {

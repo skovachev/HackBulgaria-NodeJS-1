@@ -1,7 +1,8 @@
 var chai = require('chai');
 var expect = chai.expect;
-var mongoose = require('mongoose');
-var Sitemap = require('../../../domain/models/Sitemap');
+var domain = require('../../../domain');
+var Sitemap = domain.Sitemap;
+var mongoose = domain.mongoose;
 var request = require('supertest'),
     app = require('../../app'),
     apiCalls = require('../helpers/apiCalls')(app),
