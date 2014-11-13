@@ -2,6 +2,11 @@ var Sitemap = require('../models/Sitemap'),
     debug = require('debug')('SitemapsService');
 
 module.exports = {
+    findPendingSitemap: function (done) {
+        Sitemap.findOne({
+            status: 'currently crawling',
+        }, done);
+    },
     createSitemap: function(sitemapData, done) {
         var url = sitemapData.url,
             item = {
@@ -54,28 +59,12 @@ module.exports = {
         });
     },
 
-    addUrlToSitemap: function(id, url, done) {
-        Sitemap.findOne({
-            _id: id
-        }, function(err, sitemap) {
-            if (!err) {
-                var before = new Sitemap(sitemap);
-
-                Object.keys(sitemapData).forEach(function(key) {
-                    sitemap[key] = sitemapData[key];
-                });
-
-                sitemap.save(function(err, after) {
-                    if (!err) {
-                        done(err, after);
-                    } else {
-                        done(err);
-                    }
-                });
-            } else {
-                done(err);
-            }
-        });
+    addUrlToSitemap: function(id, url, links, done) {
+        var urlItem = {
+            url: url,
+            links: links
+        };
+        Sitemap.update({_id: id }, {$push: { 'sitemap' : urlItem }}, done);
     },
 
     listAllSitemaps: function(done) {
