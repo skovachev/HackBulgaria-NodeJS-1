@@ -1,6 +1,17 @@
 var express = require("express"),
-      app = express();
+    app = express(),
+    config = require('./config/database'),
+    mongoose = require('mongoose');
 
-app.use(express.static(__dirname + "/public"))
+mongoose.connect(config.url);
 
-app.listen(3000);
+require('./config/app')(app);
+require('./config/passport')(app);
+require('./config/routes')(app);
+
+var server = app.listen(3000);
+
+var host = server.address().address;
+var port = server.address().port;
+console.log('Server listening at http://%s:%s', host, port);
+
