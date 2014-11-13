@@ -5,11 +5,9 @@ module.exports = {
     createSitemap: function(sitemapData, done) {
         var url = sitemapData.url,
             item = {
+                url: url,
                 status: 'currently crawling',
-                sitemap: [{
-                    url: url,
-                    links: []
-                }]
+                sitemap: []
             };
 
         var sitemap = new Sitemap(item);

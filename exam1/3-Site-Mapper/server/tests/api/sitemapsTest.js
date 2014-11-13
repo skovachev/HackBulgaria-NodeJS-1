@@ -55,12 +55,30 @@ describe('Sitemaps suite', function() {
                         expect(createdItem, 'Result should contain the _id of the created sitemap').to.have.property('_id');
                         expect(createdItem, 'result should have a sitemap field').to.have.property('sitemap');
                         expect(createdItem, 'result should have a status field').to.have.property('status');
-                        expect(createdItem, 'result should have a status field').to.not.have.property('url');
-                        expect(createdItem.status, 'result status should be crawling').to.equal('currently crawling');
-                        expect(createdItem.sitemap, 'result sitemap property should contain first url').to.deep.equal([{
-                            url: item.url,
-                            links: []
-                        }]);
+                        expect(createdItem.status, 'result status should be set').to.equal('currently crawling');
+                        expect(createdItem.sitemap, 'result sitemap property should exist').to.deep.equal([]);
+                    });
+            });
+
+            it('should not create an existing sitemap', function(done) {
+                var item = generator.generateSitemap();
+                apiCalls.createItem(item)
+                    .expect(201)
+                    .expect(function(res) {
+                        var body = res.body;
+                        var createdItem = body.sitemap;
+                        
+                        apiCalls.createItem(item, done)
+                            .expect(201)
+                            .expect(function(res) {
+                                var body = res.body;
+
+                                expect(body.sitemap._id, 'should just return other sitemap').to.equal(createdItem._id);
+                                
+                                Sitemap.find({}, function(err, maps){
+                                    expect(maps.length, 'number of sitemaps in db').to.equal(3);
+                                });
+                            });
                     });
             });
         });
@@ -77,10 +95,7 @@ describe('Sitemaps suite', function() {
                         expect(returnedItem, 'Returned sitemap').to.deep.equal({
                             _id: returnedItem._id,
                             status: 'currently crawling',
-                            sitemap: [{
-                                url: sitemaps[0].sitemap[0].url,
-                                links: []
-                            }]
+                            sitemap: []
                         });
                     });
             });

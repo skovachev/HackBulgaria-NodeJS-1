@@ -13,6 +13,10 @@ var SitemapUrlSchema = new Schema({
 });
 
 var SitemapSchema = new Schema({
+    url: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         required: true,

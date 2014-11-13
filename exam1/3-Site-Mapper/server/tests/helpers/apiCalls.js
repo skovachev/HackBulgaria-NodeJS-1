@@ -9,8 +9,10 @@ module.exports = function(app) {
             .set('Accept', 'application/json')
             .set('Content-Type', 'application/json')
             .end(function(err, res) {
-                if (err) return done(err);
-                done();
+                if (done) {
+                    if (err) return done(err);
+                    done();
+                }
             });
     }
 

@@ -16,11 +16,9 @@ function generateSitemap() {
 
 function generateCreatedSitemap() {
     return {
+        url: generateUrl(),
         status: 'currently crawling',
-        sitemap: [{
-            url: generateUrl(),
-            links: []
-        }]
+        sitemap: []
     };
 }
 
