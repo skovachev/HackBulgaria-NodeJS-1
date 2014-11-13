@@ -1,7 +1,7 @@
 {
-  "name": "domain",
+  "name": "sitemapper-domain",
   "version": "0.0.1",
-  "description": "Domain module for the Site Mapper application",
+  "description": "Site Mapper application: Domain module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

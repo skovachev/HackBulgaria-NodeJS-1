@@ -1,5 +1,5 @@
 {
-  "name": "worker",
+  "name": "sitemapper-worker",
   "version": "0.0.1",
   "description": "Site Mapper application: Worker component",
   "main": "index.js",
