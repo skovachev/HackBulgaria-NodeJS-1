@@ -40,7 +40,17 @@ DirectedGraph.prototype.pathBetween = function(nodeA, nodeB) {
 };
 
 DirectedGraph.prototype.toString = function() {
-    return JSON.stringify(edges);
+    var arr = {};
+    Object.keys(edges).forEach(function(edgeKey){
+        var value = edges[edgeKey];
+        if (value instanceof DirectedGraph) {
+            arr[edgeKey] = value.getEdges();
+        }
+        else {
+            arr[edgeKey] = value;
+        }
+    });
+    return JSON.stringify(arr);
 };
 
 

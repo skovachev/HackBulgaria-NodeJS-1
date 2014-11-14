@@ -1,5 +1,5 @@
 var expect = require("chai").expect,
-    JSONGraphSource = require('../sources/json');
+    JSONGraphSource = require('../../graph-source-json');
 
 describe('DirectedGraph', function() {
 
@@ -40,7 +40,6 @@ describe('DirectedGraph', function() {
 
     describe('#toString()', function() {
         it('should convert the graph to string', function() {
-            console.log(graph.toString());
             expect(graph.toString()).to.equal("{\"testA\":[],\"testC\":[\"testB\",\"testD\"]}");
         });
     });

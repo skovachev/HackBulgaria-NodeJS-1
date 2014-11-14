@@ -1,5 +1,5 @@
-var GithubGraphSource = require('../graph-source-api'),
-    DatabaseGraphSource = require('../graph-source-mongodb');
+var GithubGraphSource = require('../../graph-source-github'),
+    DatabaseGraphSource = require('../../graph-source-mongodb');
 
 function createGraphFor(req, res) {
     var username = req.body.username,
@@ -38,7 +38,7 @@ function getFollowingStatus(req, res) {
 
             var first = graph.pathBetween(graph.getStart(), username),
                 second = graph.pathBetween(username, graph.getStart()),
-                mutual = first() && second,
+                mutual = first && second,
                 response = null;
 
             if (mutual) {
