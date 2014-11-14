@@ -12,6 +12,8 @@ module.exports = function(app) {
     });
 
     require('./auth/github')(passport);
+    require('./auth/facebook')(passport);
+    require('./auth/twitter')(passport);
 
     app.use(passport.initialize());
     app.use(passport.session());

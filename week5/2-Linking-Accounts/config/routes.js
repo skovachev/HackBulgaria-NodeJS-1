@@ -7,19 +7,28 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/login');
 }
 
+function ensureNotAuthenticated(req, res, next) {
+    if (!req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/');
+}
+
 module.exports = function(app) {
 
     app.get('/', ensureAuthenticated, function(req, res) {
         res.render('home', {
             user: req.user,
-            layout: 'layouts/index'
+            layout: 'layouts/index',
+            title: 'Home'
         });
     });
 
-    app.get('/login', function(req, res) {
+    app.get('/login', ensureNotAuthenticated, function(req, res) {
         res.render('login', {
             user: req.user,
-            layout: 'layouts/index'
+            layout: 'layouts/index',
+            title: 'Sign in'
         });
     });
 
@@ -31,7 +40,7 @@ module.exports = function(app) {
             failureRedirect: '/login'
         }),
         function(req, res) {
-            // Successful authentication, redirect home.
+            res.locals.user = req.user;
             res.redirect('/');
         });
 
@@ -40,18 +49,26 @@ module.exports = function(app) {
 
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {
-            successRedirect: '/',
             failureRedirect: '/login'
-        }));
+        }),
+        function(req, res) {
+            res.locals.user = req.user;
+            res.redirect('/');
+        });
+
 
     // twitter routes
     app.get('/auth/twitter', passport.authenticate('twitter'));
 
     app.get('/auth/twitter/callback',
         passport.authenticate('twitter', {
-            successRedirect: '/',
             failureRedirect: '/login'
-        }));
+        }),
+        function(req, res) {
+            res.locals.user = req.user;
+            res.redirect('/');
+        });
+
 
     app.get('/logout', function(req, res) {
         req.logout();

@@ -1,0 +1,23 @@
+{
+  "name": "linking-accounts",
+  "version": "0.0.1",
+  "homepage": "https://github.com/skovachev/HackBulgaria-NodeJS-1",
+  "authors": [
+    "Stefan Kovachev"
+  ],
+  "description": "Simple PassportJS app that allows the linking of multiple social network accounts",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.1",
+    "bootstrap-social": "~4.8.0"
+  }
+}

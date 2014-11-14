@@ -1,1 +1,33 @@
-Test!
+<% if (locals.user.github) { %>
+    <a class="btn btn-block btn-social btn-github disabled">
+        <i class="fa fa-github"></i> Linked with Github: <%= locals.user.github.username %>
+    </a>
+<% } else { %>
+    <a href='/auth/github' class="btn btn-block btn-social btn-github">
+        <i class="fa fa-github"></i> Link with GitHub account
+    </a>
+<% } %>
+
+<% if (locals.user.facebook) { %>
+    <a class="btn btn-block btn-social btn-facebook disabled"> 
+        <i class="fa fa-facebook"></i>
+        Linked with Facebook: <%= locals.user.facebook.name %>
+    </a>
+<% } else { %>
+    <a href='/auth/facebook' class="btn btn-block btn-social btn-facebook"> 
+        <i class="fa fa-facebook"></i>
+        Link with Facebook account
+    </a>
+<% } %>
+
+<% if (locals.user.twitter) { %>
+    <a class="btn btn-block btn-social btn-twitter disabled">
+        <i class="fa fa-twitter"></i>
+         Linked with Twitter: <%= locals.user.twitter.username %>
+    </a>
+<% } else { %>
+    <a href='/auth/twitter' class="btn btn-block btn-social btn-twitter">
+        <i class="fa fa-twitter"></i>
+        Link with Twitter account
+    </a>
+<% } %>

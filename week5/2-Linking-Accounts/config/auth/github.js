@@ -6,15 +6,17 @@ module.exports = function(passport) {
     passport.use(new GitHubStrategy({
             clientID: credentials['clientId'],
             clientSecret: credentials['clientSecret'],
-            callbackURL: "http://127.0.0.1:3000/auth/github/callback"
+            callbackURL: "http://linkedacc.dev:3000/auth/github/callback",
+            passReqToCallback: true
         },
-        function(accessToken, refreshToken, profile, done) {
-            process.nextTick(function(){
-                User.findOrCreate({
-                    githubId: profile.id
-                }, function(err, user) {
-                    return done(err, user);
-                });
+        function(req, accessToken, refreshToken, profile, done) {
+            process.nextTick(function() {
+                var githubInfo = {
+                    'id': profile.id,
+                    'name': profile.displayName,
+                    'username': profile.username
+                };
+                User.createOrUpdateUser('github', profile.id, githubInfo, req.user, done);
             });
         }
     ));
