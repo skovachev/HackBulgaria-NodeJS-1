@@ -1,33 +1,18 @@
-# Tee Book
+# Linking Accounts app
 
-(Check http://unixhelp.ed.ac.uk/CGI/man-cgi?tee)
+An app that allows a user to login using Github / Facebook / Twitter and link all 3 of his social network accounts together.
 
-## Login with GitHub
+For full description of the tasks click [here](Task.md).
 
-Using express and [PassportJS](http://passportjs.org/) create a simple web app that lets you login with your GitHub account.
+## Installation
+Add the following entry into your hosts file:
 
-You can use this - https://github.com/jaredhanson/passport-github
+```
+127.0.0.1  linkedacc.dev
+```
 
-## Once logged in, link Facebook and / or Twitter accounts
+To install the app run `npm install` and `bower install` in the main folder.
 
-Once you have logged in, there should be a choice for the user to link more social accounts. Because moar!
-
-### Connect to Facebook
-
-Once you are ready, connect your Facebook account to the web app and get the user information!
-
-You can use this - http://passportjs.org/guide/facebook/
-
-### Connect to Twitter
-
-Once you are ready, connect your Twitter account to the web app and get the user information!
-
-You can use this - http://passportjs.org/guide/twitter/
-
-## Problems to solve
-
-Should you have an independent User model and just link facebook and twitter account models to it or use one of the two as a "master" account and just link the second one?
-
-## Making it more beautiful
-
-There are social login bootstrap buttons here - http://lipis.github.io/bootstrap-social/ - you can use them.
+## Running the app
+Make sure `mongod` is running.
+Start the server using `node .` and visit _http://linkedacc:3000_ for the home page.

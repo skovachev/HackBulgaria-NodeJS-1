@@ -7,7 +7,7 @@ For full description of the tasks click [here](Task.md).
 
 ## Installation
 
-To install the ap run `npm install` in the _static-app_ folder.
+To install the app run `npm install` in the _static-app_ folder.
 
 
 ## Running the app
