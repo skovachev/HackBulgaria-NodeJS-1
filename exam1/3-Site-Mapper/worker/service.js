@@ -73,7 +73,7 @@ function parseLinksFromRawHtml(host, html, sitemap, done) {
 }
 
 function parseUrlLinks(url, depth, sitemap, done) {
-    process.nextTick(function() {
+    setImmediate(function() {
         var parsedUrl = urlTools.parse(url),
             host = parsedUrl.hostname;
 
@@ -157,7 +157,7 @@ function run() {
                 processSitemapJob(sitemap, function() {
                     debug('Sitemap completed. Sleeping 2 secs...');
                     sleep.sleep(2);
-                    process.nextTick(function() {
+                    setImmediate(function() {
                         run();
                     });
                 });

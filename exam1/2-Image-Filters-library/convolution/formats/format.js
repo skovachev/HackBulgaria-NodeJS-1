@@ -48,7 +48,7 @@ function calculateNextPixel(lastPixelPosition, imageData, kernel, result, deferr
     if (completed) {
         deferred.resolve(result);
     } else {
-        process.nextTick(function() {
+        setImmediate(function() {
             // calculate next position
             var nextPosition = lastPixelPosition;
             nextPosition[1] ++;

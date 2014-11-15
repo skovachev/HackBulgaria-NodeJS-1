@@ -7,6 +7,9 @@ var DirectedGraph = require('../graph'),
 
 mongoose.connect('mongodb://localhost:27017/njsw3_github_grapher');
 
+
+// find nodes, each one == edge, add alledges to array for first invocation
+// create graph from that
 function findNodesForNode(node, depth) {
     var deferred = q.defer();
     GraphNodeModel.find({
