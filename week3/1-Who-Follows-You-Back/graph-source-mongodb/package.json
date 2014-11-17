@@ -5,6 +5,7 @@
   "main": "database.js",
   "dependencies": {
     "async": "^0.9.0",
+    "debug": "^2.1.0",
     "mongoose": "^3.8.18",
     "q": "^1.1.1"
   },

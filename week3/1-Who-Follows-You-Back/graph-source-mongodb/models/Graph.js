@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 var GraphSchema = new Schema({
     start: String,
-    depth: [Number]
+    depth: Number
 }, {
     collection: 'graphs'
 });
