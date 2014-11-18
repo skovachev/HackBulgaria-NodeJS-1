@@ -12,7 +12,6 @@ http.createServer(function(req, res) {
     if (args.regex) {
         // create regex object
         var regex = new RegExp(args.regex);
-        console.log(typeof regex);
         stream.setRegex(regex);
     }
 

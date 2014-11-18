@@ -2,6 +2,8 @@ var Transform = require('stream').Transform,
     util = require('util');
 
 function RegexStream(regex, opt) {
+    opt = opt || {};
+    opt.objectMode = true;
     Transform.call(this, opt);
     this.regex = regex;
 }
