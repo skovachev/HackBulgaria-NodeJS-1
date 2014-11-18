@@ -1,6 +1,6 @@
 #Simple proxy server
 
-This task was to create a simple proxy server.
+This task was to create a simple proxy server. The server manages cookies sent from target URLs and makes sure these are sent when needed. Furthermore, all links in the target websites are modified to also go through the proxy.
 
 For full description of the tasks click [here](Task.md).
 

@@ -3,43 +3,63 @@ var express = require("express"),
     request = require('request'),
     url = require('url'),
     cookieParser = require('cookie-parser'),
-    session = require('express-session');
+    session = require('express-session'),
+    debug = require('debug')('Proxy'),
+    LinkTransformerStream = require('./LinkTransformerStream'),
+    tough = require('tough-cookie'),
+    Cookie = tough.Cookie;
 
 app.use(cookieParser());
 app.use(session({
     secret: '1234567890QWERTY'
 }));
 
+var cookiejar = new request.jar();
+
 app.get('/proxy', function(req, res) {
     var query = url.parse(req.url, true).query;
+
     if (!query.url) {
         res.status(500).send('Url parameter is missing');
-    } else {
+    }
+    else {
+
         // make sure request uses express's cookies
-        var j = request.jar();
         var requestStream = request({
             url: query.url,
-            jar: j
+            jar: cookiejar
         });
+
+        var linkTransformerStream = new LinkTransformerStream('http://0.0.0.0:3000/proxy?url=');
+
+        debug('CookieJar content: ', cookiejar);
 
         requestStream.on('response', function(response) {
 
             // save cookies sent from url
             if (response.headers &&
-                response.headers.hasOwnProperty('set-cookie') &&
-                Object.prototype.toString.apply(response.headers['set-cookie']) === '[object Array]') {
-                // copy cookies to local request session
-                response.headers['set-cookie'][0].split('; ').forEach(function(cookiePair) {
-                    var separatorIndex = cookiePair.indexOf('=');
-                    var key = cookiePair.substring(0, separatorIndex);
-                    var value = cookiePair.substring(separatorIndex + 1);
-                    res.cookie(key, value);
+                response.headers.hasOwnProperty('set-cookie')) {
+
+                var cookies = [];
+                if (response.headers['set-cookie'] instanceof Array) {
+                    cookies = response.headers['set-cookie'].map(function(c) {
+                        return (Cookie.parse(c));
+                    });
+                } else {
+                    cookies = [Cookie.parse(response.headers['set-cookie'])];
+                }
+
+                cookies.forEach(function(cookie) {
+                    request.cookie(cookie.toString());
                 });
             }
 
         });
 
-        requestStream.pipe(res);
+        // pipe request through proxy
+        requestStream
+            .pipe(linkTransformerStream)
+            .pipe(res);
     }
 });
 
