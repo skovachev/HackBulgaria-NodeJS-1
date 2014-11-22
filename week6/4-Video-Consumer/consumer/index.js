@@ -1,13 +1,16 @@
 var DataTransformerStream = require('./DataTransformerStream'),
     Socket = require('net').Socket,
-    transformerStream = new DataTransformerStream(),
     ImageToStdOutTransformStream = require('./ImageToStdOutTransformStream'),
-    imageToStdOutStream = new ImageToStdOutTransformStream();
+    ImageToFileWriteStream = require('./ImageToFileWriteStream');
 
 var socket = new Socket();
-socket.connect(3000, '192.168.1.138');
+socket.connect(3000, '127.0.0.1');
+
+// socket
+//     .pipe(new DataTransformerStream())
+//     .pipe(new ImageToStdOutTransformStream())
+//     .pipe(process.stdout);
 
 socket
-    .pipe(transformerStream)
-    .pipe(imageToStdOutStream)
-    .pipe(process.stdout);
+    .pipe(new DataTransformerStream())
+    .pipe(new ImageToFileWriteStream('out.png'));

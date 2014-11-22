@@ -9,6 +9,7 @@
   "author": "Stefan Kovachev",
   "license": "MIT",
   "dependencies": {
-    "debug": "^2.1.0"
+    "debug": "^2.1.0",
+    "pngjs": "^0.4.0"
   }
 }

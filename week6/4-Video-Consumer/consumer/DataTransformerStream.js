@@ -17,7 +17,7 @@ DataTransformerStream.prototype.writeImage = function(width, height, buf) {
     this.push({
         imageHeight: height,
         imageWidth: width,
-        imageContent: this.accummulator.toString()
+        imageContent: buf.toString()
     });
 };
 
@@ -28,8 +28,8 @@ DataTransformerStream.prototype.checkForImage = function() {
         
         debug('dimentions read - width: %d, height: %d', width, height);
 
-        var channelsPerPixel = 3; // rgb
-        var requiredLength = width * height * channelsPerPixel;
+        var channelsPerPixel = 4; // rgba
+        var requiredLength = width * height * channelsPerPixel + 4;
 
         debug("requiredLength %d length %d", requiredLength, this.accummulator.length);
         if (this.accummulator.length < requiredLength) {
@@ -37,6 +37,14 @@ DataTransformerStream.prototype.checkForImage = function() {
         }
         else {
             var imageContent = this.accummulator.slice(5, requiredLength);
+            // debug('requiredLength-1', this.accummulator[requiredLength-1]);
+            // debug('requiredLength', this.accummulator[requiredLength]);
+            // for (var i = requiredLength-1000; i < requiredLength+1000; i++) {
+            //     if (this.accummulator[i] === 0) {
+            //         debug("FOUND, "+ i, requiredLength-i);
+            //     }
+            // }
+
             this.accummulator = this.accummulator.slice(requiredLength+1);
 
             this.writeImage(width, height, imageContent);

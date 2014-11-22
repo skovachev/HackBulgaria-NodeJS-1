@@ -9,6 +9,8 @@
   "author": "Evgeni Kunev",
   "license": "MIT",
   "dependencies": {
-    "debug": "^2.1.0"
+    "debug": "^2.1.0",
+    "png-js": "^0.1.1",
+    "v4l2camera": "^0.4.3"
   }
 }
