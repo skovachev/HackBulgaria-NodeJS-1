@@ -1,0 +1,14 @@
+{
+  "name": "streamer",
+  "version": "1.0.0",
+  "description": "Streamer module",
+  "main": "streamer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Evgeni Kunev",
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^2.1.0"
+  }
+}
