@@ -1,18 +1,31 @@
 #Video consumer
 
+For a description of the task click [here](Task.md).
+
+## Installation 
+Make sure to run `npm install` in the folders of both modules (__streamer__ and __consumer__).
+
 ##Streamer
-The file `streamer.js` implements a server, that accepts connections on port 3000 and starts sending image data to them live from a camera on the machine the server is running on.
+To start the streamer run `node streamer`.
 
-Each time a connection is made the following data is sent:
+The __streamer__ module has been updated to include a simple image streamer. This object streams the same image over and over instead of taking the images from a web camera. 
 
-* one `UInt16` for the width of the image
-* one `UInt16` for the height of the image
-* `3 * width * height` bytes of RGB data for the actual image
-* `0` byte signifying the end of the image
+This is a most simple solution for some systems that can't use the normal streamer module.
+
+To run the module using the video camera streamer type:
+
+```
+node streamer/streamer.js
+```
 
 ##Consumer
-Your task is to establish a connection to the server in `streamer.js` and save the output from it as a png file. Implement a `Transform` stream that takes the bytes sent from the server as input and produces a `Buffer` with the data to be written to the png file.
+The __consumer__ module connects to the socket provided by the __streamer__ module and handles the streamed images further.
+It provides a couple of different outputs realized through streams:
 
-Write each frame you get from the server as a separate png file.
+* output in the console using _ImageToStdOutTransformStream_
+* output to a file using _ImageToFileWriteStream_
 
-You can use the [png node module](https://www.npmjs.org/package/png) or [pngjs](https://www.npmjs.org/package/pngjs) for creating the file.
+To run the consumer type `node consumer`
+
+
+

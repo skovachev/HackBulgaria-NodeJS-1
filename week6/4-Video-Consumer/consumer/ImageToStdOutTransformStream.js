@@ -20,7 +20,7 @@ ImageToStdOutTransformStream.prototype._transform = function(buf, encoding, call
         this.push(JSON.stringify(buf));
         callback();
     }
-    
+
 };
 
 module.exports = ImageToStdOutTransformStream;

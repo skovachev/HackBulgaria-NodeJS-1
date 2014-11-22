@@ -19,23 +19,10 @@ ImageToFileWriteStream.prototype.writeImage = function(image) {
         width: image.imageWidth
     });
 
-    var imageContent = new Buffer(image.imageContent);
-
-    for (var y = 0; y < image.imageHeight; y++) {
-        for (var x = 0; x < image.imageWidth; x++) {
-            var idx = (image.imageWidth * y + x) << 4;
-
-            // invert color
-            png.data[idx] = imageContent[idx];
-            png.data[idx+1] = imageContent[idx+1];
-            png.data[idx+2] = imageContent[idx+2];
-
-            // and reduce opacity
-            png.data[idx+3] = imageContent[idx+3];
-        }
-    }
-
-    png.pack().pipe(fs.createWriteStream(this.file));
+    var stream = this;
+    png.parse(new Buffer(image.imageContent, 'binary'), function() {
+        png.pack().pipe(fs.createWriteStream(stream.file));
+    });
 };
 
 ImageToFileWriteStream.prototype._write = function(buf, encoding, callback) {
@@ -47,7 +34,7 @@ ImageToFileWriteStream.prototype._write = function(buf, encoding, callback) {
         this.writeImage(buf);
         callback();
     }
-    
+
 };
 
 module.exports = ImageToFileWriteStream;

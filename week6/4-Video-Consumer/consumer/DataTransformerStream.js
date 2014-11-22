@@ -17,7 +17,7 @@ DataTransformerStream.prototype.writeImage = function(width, height, buf) {
     this.push({
         imageHeight: height,
         imageWidth: width,
-        imageContent: buf.toString()
+        imageContent: buf.toString('binary')
     });
 };
 
@@ -37,14 +37,6 @@ DataTransformerStream.prototype.checkForImage = function() {
         }
         else {
             var imageContent = this.accummulator.slice(5, requiredLength);
-            // debug('requiredLength-1', this.accummulator[requiredLength-1]);
-            // debug('requiredLength', this.accummulator[requiredLength]);
-            // for (var i = requiredLength-1000; i < requiredLength+1000; i++) {
-            //     if (this.accummulator[i] === 0) {
-            //         debug("FOUND, "+ i, requiredLength-i);
-            //     }
-            // }
-
             this.accummulator = this.accummulator.slice(requiredLength+1);
 
             this.writeImage(width, height, imageContent);

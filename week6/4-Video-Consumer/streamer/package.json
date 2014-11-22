@@ -2,15 +2,16 @@
   "name": "streamer",
   "version": "1.0.0",
   "description": "Streamer module",
-  "main": "streamer.js",
+  "main": "image_streamer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Evgeni Kunev",
+  "contributors": ["Stefan Kovachev"],
   "license": "MIT",
   "dependencies": {
     "debug": "^2.1.0",
-    "png-js": "^0.1.1",
+    "pngjs": "^0.4.0",
     "v4l2camera": "^0.4.3"
   }
 }

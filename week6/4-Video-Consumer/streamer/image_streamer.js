@@ -1,23 +1,28 @@
 var debug = require('debug')('image_streamer'),
     net = require('net'),
-    PNG = require('png-js');
+    PNG = require('pngjs').PNG,
+    fs = require('fs');
 
 function writeImage(connection) {
 
-  PNG.decode('meadow-and-flowers.png', function(pixels) {
-      // pixels is a 1d array (in rgba order) of decoded pixel data
-      
-      var metaDataBuffer = new Buffer(4);
+  fs.createReadStream('./images/meadow-and-flowers.png')
+    .pipe(new PNG({
+        filterType: 4
+    }))
+    .on('parsed', function() {
 
-      metaDataBuffer.writeUInt16BE(1600, 0);
-      metaDataBuffer.writeUInt16BE(1200, 2);
+        var metaDataBuffer = new Buffer(4);
 
-      var buffer = Buffer.concat([metaDataBuffer, new Buffer(pixels), new Buffer([0])]);
+        metaDataBuffer.writeUInt16BE(this.width, 0);
+        metaDataBuffer.writeUInt16BE(this.height, 2);
 
-      debug('writing', buffer.length, 'bytes to client');
-      
-      connection.write(buffer);
-  });
+        var buffer = Buffer.concat([metaDataBuffer, this.data, new Buffer([0])]);
+
+        debug('writing', buffer.length, 'bytes to client');
+
+        connection.write(buffer);
+        
+    });
 }
 
 net.createServer({allowHalfOpen: true}, function (connection) {

@@ -6,6 +6,7 @@ var DataTransformerStream = require('./DataTransformerStream'),
 var socket = new Socket();
 socket.connect(3000, '127.0.0.1');
 
+// to output image data in the console uncomment these lines
 // socket
 //     .pipe(new DataTransformerStream())
 //     .pipe(new ImageToStdOutTransformStream())
