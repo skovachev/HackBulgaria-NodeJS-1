@@ -42,6 +42,10 @@ ChatClient.prototype.connectToChat = function(room, username) {
         }
     });
 
+    this.io.on(this.username + '.' + room + '.information', function(roomInfo){
+        that.showMessage('Users in room: ' + roomInfo.users.join(', '));
+    });
+
     this.io.on(this.room + '.client.connected', function(data){
         if (data.username !== that.username) {
             that.showMessage(data.username + " joined the chat.");
@@ -66,7 +70,10 @@ ChatClient.prototype.connectToChat = function(room, username) {
 };
 
 ChatClient.prototype.disconnectFromChat = function() {
-    this.io.emit('client.disconnect', {username: this.username});
+    this.io.emit('client.disconnect', {
+        username: this.username,
+        room: this.room
+    });
     this.showMessage('You have been logged out.');
     process.exit(0);
 };

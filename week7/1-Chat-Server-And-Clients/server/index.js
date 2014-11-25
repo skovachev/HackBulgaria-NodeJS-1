@@ -11,9 +11,11 @@ var io = require('socket.io').listen(server);
 
 server.listen(8000);
 
+var chatServer = new ChatServer(io);
+
 io.on('connection', function(socket) {
 
-    (new ChatServer(io)).startConnection(socket);
+    chatServer.startConnection(socket);
 
     console.log('New connection opened...');
 });

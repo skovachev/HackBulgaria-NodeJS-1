@@ -10,6 +10,9 @@ ChatServer.prototype.addUserToRoom = function(room, username) {
         this.rooms[room] = [];
     }
     this.rooms[room].push(username);
+    this.io.emit(username + '.' + room + '.information', {
+        users: this.rooms[room]
+    });
 };
 
 ChatServer.prototype.removeUserToRoom = function(room, username) {
