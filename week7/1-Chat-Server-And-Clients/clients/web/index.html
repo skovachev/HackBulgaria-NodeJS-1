@@ -1,0 +1,48 @@
+<html>
+
+    <head>
+        <title>Web chat client</title>
+        <script src="http://localhost:8000/socket.io/socket.io.js"></script>
+        <script src='/bower_components/jquery/dist/jquery.min.js'></script>
+        <script src='/bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
+        <script src='/assets/main.js'></script>
+
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+    </head>
+
+    <body>
+        <h1>Chat Client</h1>
+
+        <div id="chat" class='hidden'>
+            <div id="messages">
+                
+            </div>
+            <br>
+            <div id="form" class='form-group'>
+                <label for="message">
+                    Message: <input type="text" id="message" class="form-control">
+                </label>
+                <button id="send-message" class='btn'>Send</button>
+            </div>
+        </div>
+
+        <div id="login">
+            <div class="form-group">
+                <label for="username">
+                    Username:
+                    <input type="text" class="form-control" id="username">
+                </label>
+
+                <label for="room">
+                    Room:
+                    <input type="text" class="form-control" id="room">
+                </label>
+
+                <button id="login-button" class='btn'>Login</button>
+            </div>
+        </div>
+
+    </body>
+
+</html>

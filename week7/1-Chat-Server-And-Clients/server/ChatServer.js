@@ -55,6 +55,8 @@ ChatServer.prototype.startConnection = function(socket) {
         console.log('New message: ', data);
         that.emitNewMessage(data);
     });
+
+    socket.emit('server.ready');
 };
 
 module.exports = ChatServer;
