@@ -26,7 +26,26 @@ ChatClient.prototype.sendMessage = function(text) {
         this.disconnectFromChat();
     }
     else {
-        this.io.emit('message', {username: this.username, content: text, room: this.room});
+        var targeted_users = [];
+        text.split(' ').forEach(function(word){
+            if (word.length > 0 && word[0] === '@') {
+                targeted_users.push(word.substring(1));
+            }
+        });
+
+        var message = {
+            username: this.username,
+            content: text,
+            room: this.room
+        };
+
+        if (targeted_users.length > 0) {
+            message.to = targeted_users;
+        }
+
+        this.io.emit('message', message);
+
+        
     }
 };
 
@@ -38,11 +57,13 @@ ChatClient.prototype.connectToChat = function(room, username) {
 
     this.io.on(this.room + '.message.new', function(data){
         if (data.username !== that.username) {
-            that.showMessage(data.username + ": " + data.content);
+            if (typeof data.to === 'undefined' || data.to.indexOf(that.username) > -1) {
+                that.showMessage(data.username + ": " + data.content);
+            }
         }
     });
 
-    this.io.on(this.username + '.' + room + '.information', function(roomInfo){
+    this.io.on(this.username + '.' + this.room + '.information', function(roomInfo){
         that.showMessage('Users in room: ' + roomInfo.users.join(', '));
     });
 

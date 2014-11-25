@@ -40,19 +40,19 @@ ChatServer.prototype.startConnection = function(socket) {
     var that = this;
 
     socket.on('client.connect', function(data) {
-        console.log('New connection from: ' + data.username + ' in room: ' + data.room);
+        console.log('New connection: ', data);
         that.addUserToRoom(data.room, data.username);
         that.io.emit(data.room + '.client.connected', data);
     });
 
     socket.on('client.disconnect', function(data) {
-        console.log('Connection closed from: ' + data.username);
+        console.log('Connection closed: ', data);
         that.removeUserToRoom(data.room, data.username);
         that.io.emit(data.room + '.client.disconnected', {username: data.username});
     });
 
     socket.on('message', function(data) {
-        console.log('New message from: ' + data.username + " - " + data.content);
+        console.log('New message: ', data);
         that.emitNewMessage(data);
     });
 };
