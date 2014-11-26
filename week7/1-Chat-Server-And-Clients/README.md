@@ -2,60 +2,26 @@
 
 Implement a simple chat server supporting some form of simple user identification(authentication would be a nice plus). That means each user should have a unique nickname. Multiple users connected to the server should be able to see each other's messages.
 
---
+To see full task description click [here](Task.md)
 
-#Clients
+## Solution
+The solution consists of 4 modules. All connections between them are made through Socket.io sockets. The modules are:
 
-##Console client
+* __server__ - this is the chat server module. It act as a central instance that handles all connections and managed users within rooms.
+* __web_client__ - presents a web interface for the chat
+* __console_client__ - presents a console interface for the chat
+* __base_client__ - contains shared functionality by all client modules 
 
-Make a minimal console client allowing you to send a message to a user, a room or everyone on the server and receive messages meant for you or for rooms you've joined.
+## Running the app
+Make sure to run `npm install` in all module folders.
 
-##WebApp client
+In the web client module (_clients/web_) you'd need to run `bower install` to load all frontend modules the app needs.
 
-Make a simple web application to display messages send to users and rooms on the server. Add the ability to send messages to users/rooms.
+You'll need to run the server by typing `node server`.
 
----
+### Web client
+To connect through the web client you'll need to start the web client interface. Enter `node clients/web` and you'll find the UI at _http://localhost:8080/_.
 
-#Development stages
+### Console client
+To run the console client just type `node clients/console`.
 
-A good idea would be to go through the following stages of implementing your solution:
-
-##First stage
-
-One server acts as one room. That means all users connected to the server see the messages from all other users. No channels/rooms, no personal queries.
-
-##Second stage
-
-Add personal queries between users so people could talk one on one.
-
-##Third stage
-
-Add rooms. Each user can choose a room to join. All users in one room get the messages from all other users in the same room.
-
----
-
-#Architecture
-
-You need to decide how to organise the different parts to work together.
-
-## WebSocket proxy
-
-You can have a main server handling all the messages, taking care of rooms, queries and users implementing only a simple TCP socket interface with some protocol of your own choice. That way the console clients would be pretty simple to implement and can exist without ever caring about websockets.
-
-Then to include a web application in the whole picture you'll need a separate application that exposes a websocket server for the web client and relays that to the main server via TCP sockets.
-
-### Proxy communication
-
-* one socket open between the websocket proxy and the main chat server and send all information through it
-* or keep a separate socket for each websocket connection you receive
-
-## WebSocket only
-
-The main chat server could only expose a websocket interface. That way your console clients need to also connect via websockets, but your webapp can talk directly to the server and not suffer the delay of being proxied.
-
-
-#Libraries
-
-* [ws](https://www.npmjs.org/package/ws) - an implementation of WebSockets for node
-* [prompt](https://www.npmjs.org/package/prompt) - a nice way to make interactive console applications with node
-* [socket.io](http://socket.io) - an abstraction over websockets allowing you to send more complex messages than just text
