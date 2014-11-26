@@ -5,6 +5,7 @@
         <script src="http://localhost:8000/socket.io/socket.io.js"></script>
         <script src='/bower_components/jquery/dist/jquery.min.js'></script>
         <script src='/bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
+        <script src='/assets/ChatClient.js'></script>
         <script src='/assets/main.js'></script>
 
         <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -12,34 +13,55 @@
     </head>
 
     <body>
-        <h1>Chat Client</h1>
-
-        <div id="chat" class='hidden'>
-            <div id="messages">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4" style="margin-top: 50px">
                 
-            </div>
-            <br>
-            <div id="form" class='form-group'>
-                <label for="message">
-                    Message: <input type="text" id="message" class="form-control">
-                </label>
-                <button id="send-message" class='btn'>Send</button>
-            </div>
-        </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Chat Client</h3>
+                    </div>
+                    <div id="chat" class="panel-body hidden chat">
+                        <div id="messages">
+                        </div>
+                    </div>
+                    <div class="panel-footer">
 
-        <div id="login">
-            <div class="form-group">
-                <label for="username">
-                    Username:
-                    <input type="text" class="form-control" id="username">
-                </label>
+                        <a href="javascript:window.location.reload()" id='reload' class="btn btn-default hidden">Start new session</a>
 
-                <label for="room">
-                    Room:
-                    <input type="text" class="form-control" id="room">
-                </label>
+                        <div class="chat hidden">
+                            <div id="form" class='form-group'>
+                                <form id="new-message">
+                                    <label for="message">
+                                        Message: <input type="text" id="message" class="form-control">
+                                    </label>
+                                    <button id="send-message" type='submit' class='btn'>Send</button>
+                                </form>
+                            </div>
 
-                <button id="login-button" class='btn'>Login</button>
+                            <button id="logout" class='btn btn-danger btn-sm'>Logout</button>
+                        </div>
+
+                        <div id="login">
+                            <div class="form-group">
+                                <form id='login-form'>
+                                    <label for="username">
+                                        Username:
+                                        <input type="text" class="form-control" id="username">
+                                    </label>
+
+                                    <label for="room">
+                                        Room:
+                                        <input type="text" class="form-control" id="room">
+                                    </label>
+
+                                    <button id="login-button" type='submit' class='btn'>Login</button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
 

@@ -9,6 +9,7 @@
   "author": "Stefan Kovachev",
   "license": "MIT",
   "dependencies": {
+    "browserify": "^6.3.3",
     "connect": "^3.3.3",
     "serve-static": "^1.7.1"
   }

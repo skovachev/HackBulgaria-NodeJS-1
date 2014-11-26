@@ -1,8 +1,12 @@
+var BaseClient = require('../base'),
+    util = require('util');
+
+util.inherits(ChatClient, BaseClient);
+
 function ChatClient(rl, io) {
-    this.username = 'anonymous';
-    this.room = 'global';
+    BaseClient.call(this, io);
+
     this.rl = rl;
-    this.io = io;
 
     var that = this;
 
@@ -15,6 +19,8 @@ function ChatClient(rl, io) {
 }
 
 ChatClient.prototype.showMessage = function(text) {
+    ChatClient.super_.prototype.showMessage.call(this, text);
+
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
     console.log(text);
@@ -26,80 +32,25 @@ ChatClient.prototype.sendMessage = function(text) {
         this.disconnectFromChat();
     }
     else {
-        var targeted_users = [];
-        text.split(' ').forEach(function(word){
-            if (word.length > 0 && word[0] === '@') {
-                targeted_users.push(word.substring(1));
-            }
-        });
-
-        var message = {
-            username: this.username,
-            content: text,
-            room: this.room
-        };
-
-        if (targeted_users.length > 0) {
-            message.to = targeted_users;
-        }
-
-        this.io.emit('message', message);
-
-        
+        ChatClient.super_.prototype.sendMessage.call(this, text);
     }
 };
 
 ChatClient.prototype.connectToChat = function(room, username) {
-    this.username = username;
-    this.room = room || this.room;
-
-    var that = this;
-
-    this.io.on(this.room + '.message.new', function(data){
-        if (data.username !== that.username) {
-            if (typeof data.to === 'undefined' || data.to.indexOf(that.username) > -1) {
-                that.showMessage(data.username + ": " + data.content);
-            }
-        }
-    });
-
-    this.io.on(this.username + '.' + this.room + '.information', function(roomInfo){
-        that.showMessage('Users in room: ' + roomInfo.users.join(', '));
-    });
-
-    this.io.on(this.room + '.client.connected', function(data){
-        if (data.username !== that.username) {
-            that.showMessage(data.username + " joined the chat.");
-        }
-    });
-
-    this.io.on(this.room + '.client.disconnected', function(data){
-        if (data.username !== that.username) {
-            that.showMessage(data.username + " left the chat.");
-        }
-    });
-
-    this.io.emit('client.connect', {
-        username: username,
-        room: this.room
-    });
-
-    this.showMessage('You\'ve entered room: ' + this.room);
+    ChatClient.super_.prototype.connectToChat.call(this, room, username);
     
     this.rl.setPrompt(username + '> ');
     this.rl.prompt(true);
 };
 
 ChatClient.prototype.disconnectFromChat = function() {
-    this.io.emit('client.disconnect', {
-        username: this.username,
-        room: this.room
-    });
-    this.showMessage('You have been logged out.');
+    ChatClient.super_.prototype.disconnectFromChat.call(this);
     process.exit(0);
 };
 
 ChatClient.prototype.startLoginProcedure = function() {
+    ChatClient.super_.prototype.startLoginProcedure.call(this);
+
     var that = this;
     this.rl.question("What username do you want to login with? ", function(username) {
         that.rl.question("What room do you want to enter? (leave blank for global room)", function(room) {
